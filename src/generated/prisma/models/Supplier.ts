@@ -28,6 +28,7 @@ export type SupplierMinAggregateOutputType = {
   id: string | null
   name: string | null
   contactInfo: string | null
+  email: string | null
   createdAt: Date | null
 }
 
@@ -35,6 +36,7 @@ export type SupplierMaxAggregateOutputType = {
   id: string | null
   name: string | null
   contactInfo: string | null
+  email: string | null
   createdAt: Date | null
 }
 
@@ -42,6 +44,7 @@ export type SupplierCountAggregateOutputType = {
   id: number
   name: number
   contactInfo: number
+  email: number
   createdAt: number
   _all: number
 }
@@ -51,6 +54,7 @@ export type SupplierMinAggregateInputType = {
   id?: true
   name?: true
   contactInfo?: true
+  email?: true
   createdAt?: true
 }
 
@@ -58,6 +62,7 @@ export type SupplierMaxAggregateInputType = {
   id?: true
   name?: true
   contactInfo?: true
+  email?: true
   createdAt?: true
 }
 
@@ -65,6 +70,7 @@ export type SupplierCountAggregateInputType = {
   id?: true
   name?: true
   contactInfo?: true
+  email?: true
   createdAt?: true
   _all?: true
 }
@@ -145,6 +151,7 @@ export type SupplierGroupByOutputType = {
   id: string
   name: string
   contactInfo: string | null
+  email: string | null
   createdAt: Date
   _count: SupplierCountAggregateOutputType | null
   _min: SupplierMinAggregateOutputType | null
@@ -173,6 +180,7 @@ export type SupplierWhereInput = {
   id?: Prisma.StringFilter<"Supplier"> | string
   name?: Prisma.StringFilter<"Supplier"> | string
   contactInfo?: Prisma.StringNullableFilter<"Supplier"> | string | null
+  email?: Prisma.StringNullableFilter<"Supplier"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Supplier"> | Date | string
   medicines?: Prisma.MedicineListRelationFilter
 }
@@ -181,6 +189,7 @@ export type SupplierOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   contactInfo?: Prisma.SortOrderInput | Prisma.SortOrder
+  email?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   medicines?: Prisma.MedicineOrderByRelationAggregateInput
 }
@@ -192,6 +201,7 @@ export type SupplierWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.SupplierWhereInput | Prisma.SupplierWhereInput[]
   name?: Prisma.StringFilter<"Supplier"> | string
   contactInfo?: Prisma.StringNullableFilter<"Supplier"> | string | null
+  email?: Prisma.StringNullableFilter<"Supplier"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Supplier"> | Date | string
   medicines?: Prisma.MedicineListRelationFilter
 }, "id">
@@ -200,6 +210,7 @@ export type SupplierOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   contactInfo?: Prisma.SortOrderInput | Prisma.SortOrder
+  email?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.SupplierCountOrderByAggregateInput
   _max?: Prisma.SupplierMaxOrderByAggregateInput
@@ -213,6 +224,7 @@ export type SupplierScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Supplier"> | string
   name?: Prisma.StringWithAggregatesFilter<"Supplier"> | string
   contactInfo?: Prisma.StringNullableWithAggregatesFilter<"Supplier"> | string | null
+  email?: Prisma.StringNullableWithAggregatesFilter<"Supplier"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Supplier"> | Date | string
 }
 
@@ -220,6 +232,7 @@ export type SupplierCreateInput = {
   id?: string
   name: string
   contactInfo?: string | null
+  email?: string | null
   createdAt?: Date | string
   medicines?: Prisma.MedicineCreateNestedManyWithoutSupplierInput
 }
@@ -228,6 +241,7 @@ export type SupplierUncheckedCreateInput = {
   id?: string
   name: string
   contactInfo?: string | null
+  email?: string | null
   createdAt?: Date | string
   medicines?: Prisma.MedicineUncheckedCreateNestedManyWithoutSupplierInput
 }
@@ -236,6 +250,7 @@ export type SupplierUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   contactInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   medicines?: Prisma.MedicineUpdateManyWithoutSupplierNestedInput
 }
@@ -244,6 +259,7 @@ export type SupplierUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   contactInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   medicines?: Prisma.MedicineUncheckedUpdateManyWithoutSupplierNestedInput
 }
@@ -252,6 +268,7 @@ export type SupplierCreateManyInput = {
   id?: string
   name: string
   contactInfo?: string | null
+  email?: string | null
   createdAt?: Date | string
 }
 
@@ -259,6 +276,7 @@ export type SupplierUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   contactInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -266,6 +284,7 @@ export type SupplierUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   contactInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -278,6 +297,7 @@ export type SupplierCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   contactInfo?: Prisma.SortOrder
+  email?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -285,6 +305,7 @@ export type SupplierMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   contactInfo?: Prisma.SortOrder
+  email?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -292,6 +313,7 @@ export type SupplierMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   contactInfo?: Prisma.SortOrder
+  email?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
 
@@ -315,6 +337,7 @@ export type SupplierCreateWithoutMedicinesInput = {
   id?: string
   name: string
   contactInfo?: string | null
+  email?: string | null
   createdAt?: Date | string
 }
 
@@ -322,6 +345,7 @@ export type SupplierUncheckedCreateWithoutMedicinesInput = {
   id?: string
   name: string
   contactInfo?: string | null
+  email?: string | null
   createdAt?: Date | string
 }
 
@@ -345,6 +369,7 @@ export type SupplierUpdateWithoutMedicinesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   contactInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -352,6 +377,7 @@ export type SupplierUncheckedUpdateWithoutMedicinesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   contactInfo?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -390,6 +416,7 @@ export type SupplierSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   id?: boolean
   name?: boolean
   contactInfo?: boolean
+  email?: boolean
   createdAt?: boolean
   medicines?: boolean | Prisma.Supplier$medicinesArgs<ExtArgs>
   _count?: boolean | Prisma.SupplierCountOutputTypeDefaultArgs<ExtArgs>
@@ -399,6 +426,7 @@ export type SupplierSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   id?: boolean
   name?: boolean
   contactInfo?: boolean
+  email?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["supplier"]>
 
@@ -406,6 +434,7 @@ export type SupplierSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   id?: boolean
   name?: boolean
   contactInfo?: boolean
+  email?: boolean
   createdAt?: boolean
 }, ExtArgs["result"]["supplier"]>
 
@@ -413,10 +442,11 @@ export type SupplierSelectScalar = {
   id?: boolean
   name?: boolean
   contactInfo?: boolean
+  email?: boolean
   createdAt?: boolean
 }
 
-export type SupplierOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "contactInfo" | "createdAt", ExtArgs["result"]["supplier"]>
+export type SupplierOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "contactInfo" | "email" | "createdAt", ExtArgs["result"]["supplier"]>
 export type SupplierInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   medicines?: boolean | Prisma.Supplier$medicinesArgs<ExtArgs>
   _count?: boolean | Prisma.SupplierCountOutputTypeDefaultArgs<ExtArgs>
@@ -433,6 +463,7 @@ export type $SupplierPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     id: string
     name: string
     contactInfo: string | null
+    email: string | null
     createdAt: Date
   }, ExtArgs["result"]["supplier"]>
   composites: {}
@@ -861,6 +892,7 @@ export interface SupplierFieldRefs {
   readonly id: Prisma.FieldRef<"Supplier", 'String'>
   readonly name: Prisma.FieldRef<"Supplier", 'String'>
   readonly contactInfo: Prisma.FieldRef<"Supplier", 'String'>
+  readonly email: Prisma.FieldRef<"Supplier", 'String'>
   readonly createdAt: Prisma.FieldRef<"Supplier", 'DateTime'>
 }
     

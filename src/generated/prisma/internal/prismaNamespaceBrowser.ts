@@ -149,6 +149,7 @@ export const SupplierScalarFieldEnum = {
   id: 'id',
   name: 'name',
   contactInfo: 'contactInfo',
+  email: 'email',
   createdAt: 'createdAt'
 } as const
 
