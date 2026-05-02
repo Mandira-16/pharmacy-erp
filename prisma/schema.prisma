@@ -78,6 +78,7 @@ model Patient {
   name        String
   nic         String?          @unique
   phone       String?
+  email       String?
   consentFlag Boolean          @default(false)
   history     PatientHistory[]
   sales       Sale[]
@@ -105,6 +106,9 @@ model Sale {
   id          String     @id @default(cuid())
   saleDate    DateTime   @default(now())
   totalAmount Decimal    @db.Decimal(10, 2)
+  paymentMethod String   @default("CASH")
+  doctorName    String?  
+  doctorSlmc    String?        
   patient     Patient?   @relation(fields: [patientId], references: [id])
   patientId   String?
   user        User       @relation(fields: [userId], references: [id])

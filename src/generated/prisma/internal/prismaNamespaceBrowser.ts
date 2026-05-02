@@ -126,6 +126,7 @@ export const PatientScalarFieldEnum = {
   name: 'name',
   nic: 'nic',
   phone: 'phone',
+  email: 'email',
   consentFlag: 'consentFlag',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -158,6 +159,9 @@ export const SaleScalarFieldEnum = {
   id: 'id',
   saleDate: 'saleDate',
   totalAmount: 'totalAmount',
+  paymentMethod: 'paymentMethod',
+  doctorName: 'doctorName',
+  doctorSlmc: 'doctorSlmc',
   patientId: 'patientId',
   userId: 'userId',
   createdAt: 'createdAt'

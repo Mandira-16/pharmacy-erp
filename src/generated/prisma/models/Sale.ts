@@ -38,6 +38,9 @@ export type SaleMinAggregateOutputType = {
   id: string | null
   saleDate: Date | null
   totalAmount: runtime.Decimal | null
+  paymentMethod: string | null
+  doctorName: string | null
+  doctorSlmc: string | null
   patientId: string | null
   userId: string | null
   createdAt: Date | null
@@ -47,6 +50,9 @@ export type SaleMaxAggregateOutputType = {
   id: string | null
   saleDate: Date | null
   totalAmount: runtime.Decimal | null
+  paymentMethod: string | null
+  doctorName: string | null
+  doctorSlmc: string | null
   patientId: string | null
   userId: string | null
   createdAt: Date | null
@@ -56,6 +62,9 @@ export type SaleCountAggregateOutputType = {
   id: number
   saleDate: number
   totalAmount: number
+  paymentMethod: number
+  doctorName: number
+  doctorSlmc: number
   patientId: number
   userId: number
   createdAt: number
@@ -75,6 +84,9 @@ export type SaleMinAggregateInputType = {
   id?: true
   saleDate?: true
   totalAmount?: true
+  paymentMethod?: true
+  doctorName?: true
+  doctorSlmc?: true
   patientId?: true
   userId?: true
   createdAt?: true
@@ -84,6 +96,9 @@ export type SaleMaxAggregateInputType = {
   id?: true
   saleDate?: true
   totalAmount?: true
+  paymentMethod?: true
+  doctorName?: true
+  doctorSlmc?: true
   patientId?: true
   userId?: true
   createdAt?: true
@@ -93,6 +108,9 @@ export type SaleCountAggregateInputType = {
   id?: true
   saleDate?: true
   totalAmount?: true
+  paymentMethod?: true
+  doctorName?: true
+  doctorSlmc?: true
   patientId?: true
   userId?: true
   createdAt?: true
@@ -189,6 +207,9 @@ export type SaleGroupByOutputType = {
   id: string
   saleDate: Date
   totalAmount: runtime.Decimal
+  paymentMethod: string
+  doctorName: string | null
+  doctorSlmc: string | null
   patientId: string | null
   userId: string
   createdAt: Date
@@ -221,6 +242,9 @@ export type SaleWhereInput = {
   id?: Prisma.StringFilter<"Sale"> | string
   saleDate?: Prisma.DateTimeFilter<"Sale"> | Date | string
   totalAmount?: Prisma.DecimalFilter<"Sale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentMethod?: Prisma.StringFilter<"Sale"> | string
+  doctorName?: Prisma.StringNullableFilter<"Sale"> | string | null
+  doctorSlmc?: Prisma.StringNullableFilter<"Sale"> | string | null
   patientId?: Prisma.StringNullableFilter<"Sale"> | string | null
   userId?: Prisma.StringFilter<"Sale"> | string
   createdAt?: Prisma.DateTimeFilter<"Sale"> | Date | string
@@ -233,6 +257,9 @@ export type SaleOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   saleDate?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrder
+  doctorName?: Prisma.SortOrderInput | Prisma.SortOrder
+  doctorSlmc?: Prisma.SortOrderInput | Prisma.SortOrder
   patientId?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -248,6 +275,9 @@ export type SaleWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.SaleWhereInput | Prisma.SaleWhereInput[]
   saleDate?: Prisma.DateTimeFilter<"Sale"> | Date | string
   totalAmount?: Prisma.DecimalFilter<"Sale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentMethod?: Prisma.StringFilter<"Sale"> | string
+  doctorName?: Prisma.StringNullableFilter<"Sale"> | string | null
+  doctorSlmc?: Prisma.StringNullableFilter<"Sale"> | string | null
   patientId?: Prisma.StringNullableFilter<"Sale"> | string | null
   userId?: Prisma.StringFilter<"Sale"> | string
   createdAt?: Prisma.DateTimeFilter<"Sale"> | Date | string
@@ -260,6 +290,9 @@ export type SaleOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   saleDate?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrder
+  doctorName?: Prisma.SortOrderInput | Prisma.SortOrder
+  doctorSlmc?: Prisma.SortOrderInput | Prisma.SortOrder
   patientId?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -277,6 +310,9 @@ export type SaleScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Sale"> | string
   saleDate?: Prisma.DateTimeWithAggregatesFilter<"Sale"> | Date | string
   totalAmount?: Prisma.DecimalWithAggregatesFilter<"Sale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentMethod?: Prisma.StringWithAggregatesFilter<"Sale"> | string
+  doctorName?: Prisma.StringNullableWithAggregatesFilter<"Sale"> | string | null
+  doctorSlmc?: Prisma.StringNullableWithAggregatesFilter<"Sale"> | string | null
   patientId?: Prisma.StringNullableWithAggregatesFilter<"Sale"> | string | null
   userId?: Prisma.StringWithAggregatesFilter<"Sale"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Sale"> | Date | string
@@ -286,6 +322,9 @@ export type SaleCreateInput = {
   id?: string
   saleDate?: Date | string
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentMethod?: string
+  doctorName?: string | null
+  doctorSlmc?: string | null
   createdAt?: Date | string
   patient?: Prisma.PatientCreateNestedOneWithoutSalesInput
   user: Prisma.UserCreateNestedOneWithoutSalesInput
@@ -296,6 +335,9 @@ export type SaleUncheckedCreateInput = {
   id?: string
   saleDate?: Date | string
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentMethod?: string
+  doctorName?: string | null
+  doctorSlmc?: string | null
   patientId?: string | null
   userId: string
   createdAt?: Date | string
@@ -306,6 +348,9 @@ export type SaleUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  doctorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  doctorSlmc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   patient?: Prisma.PatientUpdateOneWithoutSalesNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutSalesNestedInput
@@ -316,6 +361,9 @@ export type SaleUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  doctorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  doctorSlmc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -326,6 +374,9 @@ export type SaleCreateManyInput = {
   id?: string
   saleDate?: Date | string
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentMethod?: string
+  doctorName?: string | null
+  doctorSlmc?: string | null
   patientId?: string | null
   userId: string
   createdAt?: Date | string
@@ -335,6 +386,9 @@ export type SaleUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  doctorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  doctorSlmc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -342,6 +396,9 @@ export type SaleUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  doctorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  doctorSlmc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -361,6 +418,9 @@ export type SaleCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   saleDate?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrder
+  doctorName?: Prisma.SortOrder
+  doctorSlmc?: Prisma.SortOrder
   patientId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -374,6 +434,9 @@ export type SaleMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   saleDate?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrder
+  doctorName?: Prisma.SortOrder
+  doctorSlmc?: Prisma.SortOrder
   patientId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -383,6 +446,9 @@ export type SaleMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   saleDate?: Prisma.SortOrder
   totalAmount?: Prisma.SortOrder
+  paymentMethod?: Prisma.SortOrder
+  doctorName?: Prisma.SortOrder
+  doctorSlmc?: Prisma.SortOrder
   patientId?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -499,6 +565,9 @@ export type SaleCreateWithoutUserInput = {
   id?: string
   saleDate?: Date | string
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentMethod?: string
+  doctorName?: string | null
+  doctorSlmc?: string | null
   createdAt?: Date | string
   patient?: Prisma.PatientCreateNestedOneWithoutSalesInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutSaleInput
@@ -508,6 +577,9 @@ export type SaleUncheckedCreateWithoutUserInput = {
   id?: string
   saleDate?: Date | string
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentMethod?: string
+  doctorName?: string | null
+  doctorSlmc?: string | null
   patientId?: string | null
   createdAt?: Date | string
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutSaleInput
@@ -546,6 +618,9 @@ export type SaleScalarWhereInput = {
   id?: Prisma.StringFilter<"Sale"> | string
   saleDate?: Prisma.DateTimeFilter<"Sale"> | Date | string
   totalAmount?: Prisma.DecimalFilter<"Sale"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentMethod?: Prisma.StringFilter<"Sale"> | string
+  doctorName?: Prisma.StringNullableFilter<"Sale"> | string | null
+  doctorSlmc?: Prisma.StringNullableFilter<"Sale"> | string | null
   patientId?: Prisma.StringNullableFilter<"Sale"> | string | null
   userId?: Prisma.StringFilter<"Sale"> | string
   createdAt?: Prisma.DateTimeFilter<"Sale"> | Date | string
@@ -555,6 +630,9 @@ export type SaleCreateWithoutPatientInput = {
   id?: string
   saleDate?: Date | string
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentMethod?: string
+  doctorName?: string | null
+  doctorSlmc?: string | null
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutSalesInput
   saleItems?: Prisma.SaleItemCreateNestedManyWithoutSaleInput
@@ -564,6 +642,9 @@ export type SaleUncheckedCreateWithoutPatientInput = {
   id?: string
   saleDate?: Date | string
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentMethod?: string
+  doctorName?: string | null
+  doctorSlmc?: string | null
   userId: string
   createdAt?: Date | string
   saleItems?: Prisma.SaleItemUncheckedCreateNestedManyWithoutSaleInput
@@ -599,6 +680,9 @@ export type SaleCreateWithoutSaleItemsInput = {
   id?: string
   saleDate?: Date | string
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentMethod?: string
+  doctorName?: string | null
+  doctorSlmc?: string | null
   createdAt?: Date | string
   patient?: Prisma.PatientCreateNestedOneWithoutSalesInput
   user: Prisma.UserCreateNestedOneWithoutSalesInput
@@ -608,6 +692,9 @@ export type SaleUncheckedCreateWithoutSaleItemsInput = {
   id?: string
   saleDate?: Date | string
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentMethod?: string
+  doctorName?: string | null
+  doctorSlmc?: string | null
   patientId?: string | null
   userId: string
   createdAt?: Date | string
@@ -633,6 +720,9 @@ export type SaleUpdateWithoutSaleItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  doctorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  doctorSlmc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   patient?: Prisma.PatientUpdateOneWithoutSalesNestedInput
   user?: Prisma.UserUpdateOneRequiredWithoutSalesNestedInput
@@ -642,6 +732,9 @@ export type SaleUncheckedUpdateWithoutSaleItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  doctorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  doctorSlmc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -651,6 +744,9 @@ export type SaleCreateManyUserInput = {
   id?: string
   saleDate?: Date | string
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentMethod?: string
+  doctorName?: string | null
+  doctorSlmc?: string | null
   patientId?: string | null
   createdAt?: Date | string
 }
@@ -659,6 +755,9 @@ export type SaleUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  doctorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  doctorSlmc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   patient?: Prisma.PatientUpdateOneWithoutSalesNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutSaleNestedInput
@@ -668,6 +767,9 @@ export type SaleUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  doctorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  doctorSlmc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutSaleNestedInput
@@ -677,6 +779,9 @@ export type SaleUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  doctorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  doctorSlmc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patientId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -685,6 +790,9 @@ export type SaleCreateManyPatientInput = {
   id?: string
   saleDate?: Date | string
   totalAmount: runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentMethod?: string
+  doctorName?: string | null
+  doctorSlmc?: string | null
   userId: string
   createdAt?: Date | string
 }
@@ -693,6 +801,9 @@ export type SaleUpdateWithoutPatientInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  doctorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  doctorSlmc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutSalesNestedInput
   saleItems?: Prisma.SaleItemUpdateManyWithoutSaleNestedInput
@@ -702,6 +813,9 @@ export type SaleUncheckedUpdateWithoutPatientInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  doctorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  doctorSlmc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   saleItems?: Prisma.SaleItemUncheckedUpdateManyWithoutSaleNestedInput
@@ -711,6 +825,9 @@ export type SaleUncheckedUpdateManyWithoutPatientInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   saleDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   totalAmount?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  paymentMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  doctorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  doctorSlmc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   userId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -750,6 +867,9 @@ export type SaleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   id?: boolean
   saleDate?: boolean
   totalAmount?: boolean
+  paymentMethod?: boolean
+  doctorName?: boolean
+  doctorSlmc?: boolean
   patientId?: boolean
   userId?: boolean
   createdAt?: boolean
@@ -763,6 +883,9 @@ export type SaleSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   id?: boolean
   saleDate?: boolean
   totalAmount?: boolean
+  paymentMethod?: boolean
+  doctorName?: boolean
+  doctorSlmc?: boolean
   patientId?: boolean
   userId?: boolean
   createdAt?: boolean
@@ -774,6 +897,9 @@ export type SaleSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   id?: boolean
   saleDate?: boolean
   totalAmount?: boolean
+  paymentMethod?: boolean
+  doctorName?: boolean
+  doctorSlmc?: boolean
   patientId?: boolean
   userId?: boolean
   createdAt?: boolean
@@ -785,12 +911,15 @@ export type SaleSelectScalar = {
   id?: boolean
   saleDate?: boolean
   totalAmount?: boolean
+  paymentMethod?: boolean
+  doctorName?: boolean
+  doctorSlmc?: boolean
   patientId?: boolean
   userId?: boolean
   createdAt?: boolean
 }
 
-export type SaleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "saleDate" | "totalAmount" | "patientId" | "userId" | "createdAt", ExtArgs["result"]["sale"]>
+export type SaleOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "saleDate" | "totalAmount" | "paymentMethod" | "doctorName" | "doctorSlmc" | "patientId" | "userId" | "createdAt", ExtArgs["result"]["sale"]>
 export type SaleInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   patient?: boolean | Prisma.Sale$patientArgs<ExtArgs>
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -817,6 +946,9 @@ export type $SalePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     id: string
     saleDate: Date
     totalAmount: runtime.Decimal
+    paymentMethod: string
+    doctorName: string | null
+    doctorSlmc: string | null
     patientId: string | null
     userId: string
     createdAt: Date
@@ -1249,6 +1381,9 @@ export interface SaleFieldRefs {
   readonly id: Prisma.FieldRef<"Sale", 'String'>
   readonly saleDate: Prisma.FieldRef<"Sale", 'DateTime'>
   readonly totalAmount: Prisma.FieldRef<"Sale", 'Decimal'>
+  readonly paymentMethod: Prisma.FieldRef<"Sale", 'String'>
+  readonly doctorName: Prisma.FieldRef<"Sale", 'String'>
+  readonly doctorSlmc: Prisma.FieldRef<"Sale", 'String'>
   readonly patientId: Prisma.FieldRef<"Sale", 'String'>
   readonly userId: Prisma.FieldRef<"Sale", 'String'>
   readonly createdAt: Prisma.FieldRef<"Sale", 'DateTime'>
