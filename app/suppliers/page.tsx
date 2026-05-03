@@ -1,48 +1,16 @@
 'use client'
 
-import { useSession, signOut } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import AppLayout from '../../components/AppLayout'
 
-const navItems = [
-  { icon: '▦', label: 'Dashboard', path: '/dashboard' },
-  { icon: '⊞', label: 'Point of Sale', path: '/pos' },
-  { icon: '◈', label: 'Inventory', path: '/inventory' },
-  { icon: '♡', label: 'Patient History', path: '/patients' },
-  { icon: '◎', label: 'Suppliers', path: '/suppliers', active: true },
-  { icon: '△', label: 'Alerts', path: '/alerts' },
-  { icon: '~', label: 'AI Forecasting', path: '/forecasting' },
-  { icon: '⚡', label: 'DSS', path: '/dss' },
-  { icon: '≈', label: 'Analytics', path: '/analytics' },
-  { icon: '☰', label: 'Reports', path: '/reports' },
-]
+interface Medicine { id: string; sku: string; name: string; category: string; totalStock: number; reorderPoint: number; unitPrice: number; daysToExpiry: number | null; expiryDate: string | null; stockStatus: string; expiryStatus: string; needsAction: boolean }
+interface Supplier { id: string; name: string; contactInfo: string | null; email: string | null; medicines: Medicine[]; medicineCount: number; alertCount: number; criticalCount: number }
+interface EmailDraft { supplierId: string; supplierName: string; supplierEmail: string; subject: string; selectedMedicines: Medicine[] }
 
-interface Medicine {
-  id: string; sku: string; name: string; category: string
-  totalStock: number; reorderPoint: number; unitPrice: number
-  daysToExpiry: number | null; expiryDate: string | null
-  stockStatus: string; expiryStatus: string; needsAction: boolean
-}
-
-interface Supplier {
-  id: string; name: string; contactInfo: string | null; email: string | null
-  medicines: Medicine[]; medicineCount: number; alertCount: number; criticalCount: number
-}
-
-interface EmailDraft {
-  supplierId: string
-  supplierName: string
-  supplierEmail: string
-  subject: string
-  selectedMedicines: Medicine[]
-}
-
-const stockColors: Record<string, string> = {
-  OK: '#10b981', LOW_STOCK: '#f59e0b', CRITICAL: '#ef4444', OUT_OF_STOCK: '#ef4444',
-}
-const stockLabels: Record<string, string> = {
-  OK: 'OK', LOW_STOCK: 'Low Stock', CRITICAL: 'Critical', OUT_OF_STOCK: 'Out of Stock',
-}
+const stockColors: Record<string, string> = { OK: '#10b981', LOW_STOCK: '#f59e0b', CRITICAL: '#ef4444', OUT_OF_STOCK: '#ef4444' }
+const stockLabels: Record<string, string> = { OK: 'OK', LOW_STOCK: 'Low Stock', CRITICAL: 'Critical', OUT_OF_STOCK: 'Out of Stock' }
 
 function buildEmailBody(supplierName: string, medicines: Medicine[]): string {
   if (medicines.length === 0) return ''
@@ -50,38 +18,12 @@ function buildEmailBody(supplierName: string, medicines: Medicine[]): string {
   const critical = medicines.filter(m => m.stockStatus === 'CRITICAL')
   const lowStock = medicines.filter(m => m.stockStatus === 'LOW_STOCK')
   const expiryWarning = medicines.filter(m => m.expiryStatus !== 'OK' && m.stockStatus === 'OK')
-
-  let body = `We are writing to inform you of stock requirements for medicines supplied by ${supplierName}.\n\n`
-
-  if (outOfStock.length > 0) {
-    body += `CRITICAL — OUT OF STOCK (Immediate supply required):\n`
-    outOfStock.forEach(m => {
-      body += `  • ${m.name} (${m.sku}) — Current stock: 0 units. Please supply ${m.reorderPoint * 2} units urgently.\n`
-    })
-    body += '\n'
-  }
-  if (critical.length > 0) {
-    body += `URGENT — CRITICALLY LOW STOCK:\n`
-    critical.forEach(m => {
-      body += `  • ${m.name} (${m.sku}) — Current stock: ${m.totalStock} units (ROP: ${m.reorderPoint}). Please supply ${m.reorderPoint * 2} units.\n`
-    })
-    body += '\n'
-  }
-  if (lowStock.length > 0) {
-    body += `LOW STOCK — Reorder Required:\n`
-    lowStock.forEach(m => {
-      body += `  • ${m.name} (${m.sku}) — Current stock: ${m.totalStock} units (ROP: ${m.reorderPoint}). Please supply ${m.reorderPoint * 2} units.\n`
-    })
-    body += '\n'
-  }
-  if (expiryWarning.length > 0) {
-    body += `EXPIRY NOTICE:\n`
-    expiryWarning.forEach(m => {
-      body += `  • ${m.name} (${m.sku}) — ${m.totalStock} units expiring on ${m.expiryDate} (${m.daysToExpiry} days remaining).\n`
-    })
-    body += '\n'
-  }
-  body += `Please confirm availability and expected delivery timelines at your earliest convenience.\nFor urgent orders, please contact us immediately.`
+  let body = `Dear ${supplierName} Team,\n\nWe are writing regarding stock requirements for medicines supplied by your company.\n\n`
+  if (outOfStock.length > 0) { body += `OUT OF STOCK — Immediate supply required:\n`; outOfStock.forEach(m => { body += `  • ${m.name} (${m.sku}) — Please supply ${m.reorderPoint * 2} units urgently.\n` }); body += '\n' }
+  if (critical.length > 0) { body += `CRITICALLY LOW — Urgent reorder:\n`; critical.forEach(m => { body += `  • ${m.name} (${m.sku}) — Stock: ${m.totalStock} units. Please supply ${m.reorderPoint * 2} units.\n` }); body += '\n' }
+  if (lowStock.length > 0) { body += `LOW STOCK — Reorder required:\n`; lowStock.forEach(m => { body += `  • ${m.name} (${m.sku}) — Stock: ${m.totalStock} units. Please supply ${m.reorderPoint * 2} units.\n` }); body += '\n' }
+  if (expiryWarning.length > 0) { body += `EXPIRY NOTICE:\n`; expiryWarning.forEach(m => { body += `  • ${m.name} (${m.sku}) — ${m.totalStock} units expiring ${m.expiryDate} (${m.daysToExpiry} days).\n` }); body += '\n' }
+  body += `Please confirm availability and expected delivery dates at your earliest convenience.\n\nKind regards,\nCeylon Pharmacy Management`
   return body
 }
 
@@ -98,231 +40,101 @@ export default function SuppliersPage() {
 
   useEffect(() => { if (status === 'unauthenticated') router.push('/login') }, [status, router])
 
-  const fetchSuppliers = () => {
-    setLoading(true)
-    fetch('/api/suppliers')
-      .then(r => r.json())
-      .then(d => { if (d.error) throw new Error(d.error); setSuppliers(d.suppliers ?? []) })
-      .catch(e => setError(e.message))
-      .finally(() => setLoading(false))
-  }
+  const fetchSuppliers = () => { setLoading(true); fetch('/api/suppliers').then(r => r.json()).then(d => { if (d.error) throw new Error(d.error); setSuppliers(d.suppliers ?? []) }).catch(e => setError(e.message)).finally(() => setLoading(false)) }
 
   useEffect(() => { if (status === 'authenticated') fetchSuppliers() }, [status])
 
   const openEmailDraft = (supplier: Supplier) => {
     const actionMeds = supplier.medicines.filter(m => m.needsAction)
-    const urgencyPrefix = supplier.criticalCount > 0 ? '[URGENT] ' : '[ACTION REQUIRED] '
-    setEmailDraft({
-      supplierId: supplier.id,
-      supplierName: supplier.name,
-      supplierEmail: supplier.email ?? '',
-      subject: `${urgencyPrefix}Stock Replenishment Request — ${supplier.name}`,
-      selectedMedicines: [...actionMeds],
-    })
+    setEmailDraft({ supplierId: supplier.id, supplierName: supplier.name, supplierEmail: supplier.email ?? '', subject: `${supplier.criticalCount > 0 ? '[URGENT] ' : '[ACTION REQUIRED] '}Stock Replenishment — ${supplier.name}`, selectedMedicines: [...actionMeds] })
   }
 
-  const removeMedicineFromDraft = (medicineId: string) => {
-    if (!emailDraft) return
-    setEmailDraft({
-      ...emailDraft,
-      selectedMedicines: emailDraft.selectedMedicines.filter(m => m.id !== medicineId),
-    })
-  }
+  const removeMedicineFromDraft = (id: string) => { if (!emailDraft) return; setEmailDraft({ ...emailDraft, selectedMedicines: emailDraft.selectedMedicines.filter(m => m.id !== id) }) }
 
   const sendEmail = async () => {
     if (!emailDraft) return
-    if (emailDraft.selectedMedicines.length === 0) {
-      setError('No medicines selected — add at least one medicine to the order.')
-      return
-    }
-    setSending(true)
-    setError(null)
+    setSending(true); setError(null)
     try {
-      const emailBody = buildEmailBody(emailDraft.supplierName, emailDraft.selectedMedicines)
-      const res = await fetch('/api/suppliers/notify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          supplierId: emailDraft.supplierId,
-          supplierEmail: emailDraft.supplierEmail,
-          supplierName: emailDraft.supplierName,
-          subject: emailDraft.subject,
-          emailBody,
-          adminName: session?.user?.name ?? 'Admin',
-        }),
-      })
+      const res = await fetch('/api/suppliers/notify', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ supplierId: emailDraft.supplierId, supplierEmail: emailDraft.supplierEmail, supplierName: emailDraft.supplierName, subject: emailDraft.subject, emailBody: buildEmailBody(emailDraft.supplierName, emailDraft.selectedMedicines), adminName: session?.user?.name ?? 'Admin' }) })
       const data = await res.json()
       if (data.error) throw new Error(data.error)
       setSentSuccess(`Email sent to ${emailDraft.supplierEmail}`)
       setEmailDraft(null)
       setTimeout(() => setSentSuccess(null), 5000)
-    } catch (e: any) {
-      setError(e.message)
-    } finally {
-      setSending(false)
-    }
+    } catch (e: any) { setError(e.message) }
+    finally { setSending(false) }
   }
 
-  const iStyle = {
-    width: '100%', padding: '10px 14px',
-    background: 'rgba(255,255,255,0.05)',
-    border: '1px solid rgba(255,255,255,0.1)',
-    borderRadius: '8px', color: 'white', fontSize: '13px',
-    outline: 'none', boxSizing: 'border-box' as const,
-    fontFamily: 'DM Sans, sans-serif',
-  }
+  const iStyle = { width: '100%', padding: '10px 14px', background: 'var(--bg-surface)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)', color: 'var(--text-primary)', fontSize: '13px', outline: 'none', boxSizing: 'border-box' as const, fontFamily: 'inherit' }
 
-  if (status === 'loading' || loading) return (
-    <div style={{ minHeight: '100vh', background: '#0a0a0f', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontFamily: 'DM Sans, sans-serif' }}>
-      <div style={{ textAlign: 'center' }}>
-        <div style={{ width: '32px', height: '32px', border: '2px solid rgba(255,255,255,0.1)', borderTopColor: '#3b82f6', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 12px' }} />
-        Loading suppliers...
-      </div>
-      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
-    </div>
-  )
+  if (status === 'loading' || loading) return <AppLayout><div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', flexDirection: 'column', gap: '12px' }}><div style={{ width: '28px', height: '28px', border: '3px solid var(--border-default)', borderTopColor: 'var(--brand-primary)', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} /><span style={{ fontSize: '13px', color: 'var(--text-tertiary)' }}>Loading suppliers...</span></div></AppLayout>
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#0a0a0f', fontFamily: 'DM Sans, sans-serif', color: 'white' }}>
-
-      {/* Sidebar */}
-      <div style={{ width: '220px', background: 'rgba(255,255,255,0.03)', borderRight: '1px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column', padding: '24px 0', flexShrink: 0 }}>
-        <div style={{ padding: '0 20px 24px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'linear-gradient(135deg, #3b82f6, #10b981)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px' }}>+</div>
-            <span style={{ fontWeight: '700', fontSize: '16px' }}>SmartERP</span>
-          </div>
-          <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '10px', margin: '4px 0 0 0', letterSpacing: '1px' }}>PHARMACY</p>
-        </div>
-        <nav style={{ padding: '16px 12px', flex: 1 }}>
-          {navItems.map(item => (
-            <div key={item.label} onClick={() => router.push(item.path)}
-              style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '9px 12px', borderRadius: '8px', marginBottom: '2px', cursor: 'pointer', background: item.active ? 'rgba(59,130,246,0.15)' : 'transparent', color: item.active ? '#60a5fa' : 'rgba(255,255,255,0.45)', fontSize: '13px', fontWeight: item.active ? '600' : '400', transition: 'all 0.15s' }}
-              onMouseEnter={e => { if (!item.active) (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.05)' }}
-              onMouseLeave={e => { if (!item.active) (e.currentTarget as HTMLDivElement).style.background = 'transparent' }}
-            ><span style={{ fontSize: '14px', width: '16px', textAlign: 'center' }}>{item.icon}</span>{item.label}</div>
-          ))}
-        </nav>
-        <div style={{ padding: '16px 20px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-          <div style={{ fontSize: '13px', fontWeight: '600', marginBottom: '2px' }}>{session?.user?.name}</div>
-          <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', marginBottom: '10px' }}>{(session?.user as any)?.role}</div>
-          <button onClick={() => signOut({ callbackUrl: '/login' })} style={{ width: '100%', padding: '7px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: '6px', color: '#f87171', cursor: 'pointer', fontSize: '12px' }}>Sign Out</button>
-        </div>
-      </div>
-
-      {/* Main */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '32px' }}>
+    <AppLayout>
+      <div style={{ padding: '28px 32px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '28px' }}>
           <div>
-            <h1 style={{ fontSize: '22px', fontWeight: '700', margin: '0 0 4px 0' }}>Suppliers</h1>
-            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px', margin: 0 }}>Supplier management · Stock alerts · Procurement email notifications</p>
+            <h1 style={{ fontSize: '22px', fontWeight: '800', color: 'var(--text-primary)', letterSpacing: '-0.4px', marginBottom: '3px' }}>Suppliers</h1>
+            <p style={{ fontSize: '13px', color: 'var(--text-tertiary)' }}>Supplier management · Stock alerts · Procurement notifications</p>
           </div>
-          <button onClick={fetchSuppliers} style={{ fontSize: '12px', padding: '7px 14px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', color: 'rgba(255,255,255,0.45)', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>↻ Refresh</button>
+          <button onClick={fetchSuppliers} style={{ fontSize: '12px', padding: '8px 16px', background: 'var(--bg-surface)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)', color: 'var(--text-secondary)', cursor: 'pointer', fontFamily: 'inherit', fontWeight: '500', boxShadow: 'var(--shadow-sm)' }}>↻ Refresh</button>
         </div>
 
-        {sentSuccess && (
-          <div style={{ background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: '10px', padding: '12px 16px', marginBottom: '20px', color: '#10b981', fontSize: '13px' }}>
-            ✉ {sentSuccess}
-          </div>
-        )}
-        {error && (
-          <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: '10px', padding: '12px 16px', marginBottom: '20px', color: '#f87171', fontSize: '13px' }}>
-            ⚠ {error}
-          </div>
-        )}
+        {sentSuccess && <div style={{ background: 'var(--success-bg)', border: '1px solid var(--success-border)', borderRadius: 'var(--radius-md)', padding: '12px 16px', marginBottom: '20px', color: 'var(--success)', fontSize: '13px', fontWeight: '500' }}>✉ {sentSuccess}</div>}
+        {error && <div style={{ background: 'var(--danger-bg)', border: '1px solid var(--danger-border)', borderRadius: 'var(--radius-md)', padding: '12px 16px', marginBottom: '20px', color: 'var(--danger)', fontSize: '13px' }}>⚠ {error}</div>}
 
-        {/* KPIs */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '28px' }}>
           {[
-            { label: 'TOTAL SUPPLIERS', value: suppliers.length, color: '#3b82f6' },
-            { label: 'TOTAL MEDICINES', value: suppliers.reduce((s, sup) => s + sup.medicineCount, 0), color: '#10b981' },
-            { label: 'SUPPLIERS WITH ALERTS', value: suppliers.filter(s => s.alertCount > 0).length, color: '#f59e0b' },
-            { label: 'CRITICAL ALERTS', value: suppliers.reduce((s, sup) => s + sup.criticalCount, 0), color: '#ef4444' },
+            { label: 'Total Suppliers', value: suppliers.length, color: '#2563eb' },
+            { label: 'Total Medicines', value: suppliers.reduce((s, sup) => s + sup.medicineCount, 0), color: '#10b981' },
+            { label: 'Suppliers with Alerts', value: suppliers.filter(s => s.alertCount > 0).length, color: '#f59e0b' },
+            { label: 'Critical Alerts', value: suppliers.reduce((s, sup) => s + sup.criticalCount, 0), color: '#ef4444' },
           ].map(k => (
-            <div key={k.label} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '14px', padding: '20px' }}>
-              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.5px', marginBottom: '10px' }}>{k.label}</div>
-              <div style={{ fontSize: '32px', fontWeight: '700', color: k.color }}>{k.value}</div>
+            <div key={k.label} style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-lg)', padding: '20px', boxShadow: 'var(--shadow-sm)' }}>
+              <div style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '10px' }}>{k.label}</div>
+              <div style={{ fontSize: '32px', fontWeight: '800', color: k.color }}>{k.value}</div>
             </div>
           ))}
         </div>
 
-        {/* Supplier cards */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {suppliers.map(supplier => (
-            <div key={supplier.id} style={{ background: 'rgba(255,255,255,0.03)', border: `1px solid ${supplier.criticalCount > 0 ? 'rgba(239,68,68,0.2)' : supplier.alertCount > 0 ? 'rgba(245,158,11,0.2)' : 'rgba(255,255,255,0.07)'}`, borderRadius: '16px', overflow: 'hidden' }}>
-
+            <div key={supplier.id} style={{ background: 'var(--bg-surface)', border: `1px solid ${supplier.criticalCount > 0 ? 'var(--danger-border)' : supplier.alertCount > 0 ? 'var(--warning-border)' : 'var(--border-default)'}`, borderRadius: 'var(--radius-lg)', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
               <div style={{ padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                  <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'linear-gradient(135deg, #3b82f6, #10b981)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontWeight: '700' }}>
-                    {supplier.name[0]}
-                  </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                  <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'linear-gradient(135deg, var(--brand-primary), var(--brand-secondary))', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', fontWeight: '800', color: 'white' }}>{supplier.name[0]}</div>
                   <div>
-                    <div style={{ fontSize: '16px', fontWeight: '700' }}>{supplier.name}</div>
-                    <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', marginTop: '2px' }}>{supplier.contactInfo ?? '—'}</div>
-                    <div style={{ fontSize: '12px', color: supplier.email ? '#60a5fa' : 'rgba(255,255,255,0.25)', marginTop: '2px' }}>✉ {supplier.email ?? 'No email configured'}</div>
+                    <div style={{ fontSize: '15px', fontWeight: '700', color: 'var(--text-primary)' }}>{supplier.name}</div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>{supplier.contactInfo ?? '—'}</div>
+                    <div style={{ fontSize: '12px', color: supplier.email ? 'var(--brand-primary)' : 'var(--text-tertiary)' }}>✉ {supplier.email ?? 'No email configured'}</div>
                   </div>
                 </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.5)', padding: '4px 12px', borderRadius: '20px' }}>
-                    {supplier.medicineCount} medicines
-                  </span>
-                  {supplier.alertCount > 0 && (
-                    <span style={{ fontSize: '12px', background: supplier.criticalCount > 0 ? 'rgba(239,68,68,0.1)' : 'rgba(245,158,11,0.1)', border: `1px solid ${supplier.criticalCount > 0 ? 'rgba(239,68,68,0.3)' : 'rgba(245,158,11,0.3)'}`, color: supplier.criticalCount > 0 ? '#f87171' : '#f59e0b', padding: '4px 12px', borderRadius: '20px', fontWeight: '600' }}>
-                      ⚠ {supplier.alertCount} alert{supplier.alertCount !== 1 ? 's' : ''}
-                    </span>
-                  )}
-                  {supplier.alertCount > 0 && (
-                    <button onClick={() => openEmailDraft(supplier)} disabled={!supplier.email}
-                      style={{ padding: '8px 18px', background: supplier.email ? 'linear-gradient(135deg, #3b82f6, #2563eb)' : 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '9px', color: supplier.email ? 'white' : 'rgba(255,255,255,0.3)', fontSize: '13px', fontWeight: '600', cursor: supplier.email ? 'pointer' : 'not-allowed', fontFamily: 'DM Sans, sans-serif', boxShadow: supplier.email ? '0 4px 12px rgba(59,130,246,0.25)' : 'none' }}>
-                      ✉ Draft Supplier Email
-                    </button>
-                  )}
-                  <button onClick={() => setExpandedSupplier(expandedSupplier === supplier.id ? null : supplier.id)}
-                    style={{ padding: '8px 14px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', color: 'rgba(255,255,255,0.5)', fontSize: '12px', cursor: 'pointer', fontFamily: 'DM Sans, sans-serif' }}>
-                    {expandedSupplier === supplier.id ? '▲ Hide' : '▼ View Medicines'}
-                  </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '12px', background: 'var(--bg-surface-2)', border: '1px solid var(--border-default)', color: 'var(--text-secondary)', padding: '4px 12px', borderRadius: '20px', fontWeight: '500' }}>{supplier.medicineCount} medicines</span>
+                  {supplier.alertCount > 0 && <span style={{ fontSize: '12px', background: supplier.criticalCount > 0 ? 'var(--danger-bg)' : 'var(--warning-bg)', border: `1px solid ${supplier.criticalCount > 0 ? 'var(--danger-border)' : 'var(--warning-border)'}`, color: supplier.criticalCount > 0 ? 'var(--danger)' : 'var(--warning)', padding: '4px 12px', borderRadius: '20px', fontWeight: '600' }}>⚠ {supplier.alertCount} alert{supplier.alertCount !== 1 ? 's' : ''}</span>}
+                  {supplier.alertCount > 0 && <button onClick={() => openEmailDraft(supplier)} disabled={!supplier.email} style={{ padding: '8px 16px', background: supplier.email ? 'var(--brand-primary)' : 'var(--bg-surface-3)', border: 'none', borderRadius: 'var(--radius-md)', color: supplier.email ? 'white' : 'var(--text-tertiary)', fontSize: '12px', fontWeight: '600', cursor: supplier.email ? 'pointer' : 'not-allowed', fontFamily: 'inherit', boxShadow: supplier.email ? '0 2px 8px rgba(37,99,235,0.2)' : 'none' }}>✉ Draft Order Email</button>}
+                  <button onClick={() => setExpandedSupplier(expandedSupplier === supplier.id ? null : supplier.id)} style={{ padding: '8px 14px', background: 'var(--bg-surface-2)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)', color: 'var(--text-secondary)', fontSize: '12px', cursor: 'pointer', fontFamily: 'inherit', fontWeight: '500' }}>{expandedSupplier === supplier.id ? '▲ Hide' : '▼ View Medicines'}</button>
                 </div>
               </div>
 
               {expandedSupplier === supplier.id && (
-                <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                <div style={{ borderTop: '1px solid var(--border-default)' }}>
                   <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                    <thead>
-                      <tr style={{ background: 'rgba(255,255,255,0.02)' }}>
-                        {['SKU', 'MEDICINE', 'CATEGORY', 'STOCK', 'ROP', 'EXPIRY', 'STOCK STATUS', 'EXPIRY STATUS'].map(h => (
-                          <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontSize: '10px', color: 'rgba(255,255,255,0.3)', fontWeight: '600', letterSpacing: '0.5px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>{h}</th>
-                        ))}
-                      </tr>
-                    </thead>
+                    <thead><tr style={{ background: 'var(--bg-surface-2)' }}>{['SKU', 'Medicine', 'Category', 'Stock', 'ROP', 'Expiry', 'Stock Status', 'Expiry Status'].map(h => <th key={h} style={{ padding: '10px 16px', textAlign: 'left', fontSize: '10px', color: 'var(--text-tertiary)', fontWeight: '700', letterSpacing: '0.5px', textTransform: 'uppercase', borderBottom: '1px solid var(--border-default)' }}>{h}</th>)}</tr></thead>
                     <tbody>
                       {supplier.medicines.map(med => (
-                        <tr key={med.id}
-                          style={{ borderBottom: '1px solid rgba(255,255,255,0.04)', background: med.needsAction ? 'rgba(239,68,68,0.02)' : 'transparent' }}
-                          onMouseEnter={e => (e.currentTarget as HTMLTableRowElement).style.background = 'rgba(255,255,255,0.02)'}
-                          onMouseLeave={e => (e.currentTarget as HTMLTableRowElement).style.background = med.needsAction ? 'rgba(239,68,68,0.02)' : 'transparent'}
+                        <tr key={med.id} style={{ borderBottom: '1px solid var(--border-subtle)' }}
+                          onMouseEnter={e => (e.currentTarget as HTMLTableRowElement).style.background = 'var(--bg-surface-2)'}
+                          onMouseLeave={e => (e.currentTarget as HTMLTableRowElement).style.background = 'transparent'}
                         >
-                          <td style={{ padding: '12px 16px', fontSize: '11px', color: 'rgba(255,255,255,0.4)', fontFamily: 'monospace' }}>{med.sku}</td>
-                          <td style={{ padding: '12px 16px', fontSize: '13px', fontWeight: '500' }}>{med.name}</td>
-                          <td style={{ padding: '12px 16px', fontSize: '12px', color: 'rgba(255,255,255,0.45)' }}>{med.category}</td>
-                          <td style={{ padding: '12px 16px', fontSize: '13px', fontWeight: '600', color: med.totalStock <= med.reorderPoint ? '#ef4444' : 'rgba(255,255,255,0.8)' }}>{med.totalStock}</td>
-                          <td style={{ padding: '12px 16px', fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>{med.reorderPoint}</td>
-                          <td style={{ padding: '12px 16px', fontSize: '12px', color: med.daysToExpiry !== null && med.daysToExpiry <= 30 ? '#ef4444' : med.daysToExpiry !== null && med.daysToExpiry <= 90 ? '#f59e0b' : 'rgba(255,255,255,0.45)' }}>
-                            {med.expiryDate ?? '—'}
-                            {med.daysToExpiry !== null && med.daysToExpiry <= 90 && <span style={{ fontSize: '10px', marginLeft: '4px' }}>({med.daysToExpiry}d)</span>}
-                          </td>
-                          <td style={{ padding: '12px 16px' }}>
-                            <span style={{ padding: '3px 8px', borderRadius: '20px', fontSize: '11px', fontWeight: '600', background: `${stockColors[med.stockStatus] ?? '#6b7280'}20`, color: stockColors[med.stockStatus] ?? '#6b7280', border: `1px solid ${stockColors[med.stockStatus] ?? '#6b7280'}30` }}>
-                              {stockLabels[med.stockStatus] ?? med.stockStatus}
-                            </span>
-                          </td>
-                          <td style={{ padding: '12px 16px' }}>
-                            {med.expiryStatus !== 'OK' ? (
-                              <span style={{ padding: '3px 8px', borderRadius: '20px', fontSize: '11px', fontWeight: '600', background: med.expiryStatus === 'CRITICAL' ? 'rgba(239,68,68,0.15)' : 'rgba(245,158,11,0.15)', color: med.expiryStatus === 'CRITICAL' ? '#f87171' : '#f59e0b', border: `1px solid ${med.expiryStatus === 'CRITICAL' ? 'rgba(239,68,68,0.3)' : 'rgba(245,158,11,0.3)'}` }}>
-                                {med.expiryStatus === 'CRITICAL' ? 'Expiring Soon' : 'Warning'}
-                              </span>
-                            ) : <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.2)' }}>—</span>}
-                          </td>
+                          <td style={{ padding: '11px 16px', fontSize: '11px', color: 'var(--text-tertiary)', fontFamily: 'monospace' }}>{med.sku}</td>
+                          <td style={{ padding: '11px 16px', fontSize: '13px', fontWeight: '600', color: 'var(--text-primary)' }}>{med.name}</td>
+                          <td style={{ padding: '11px 16px', fontSize: '12px', color: 'var(--text-secondary)' }}>{med.category}</td>
+                          <td style={{ padding: '11px 16px', fontSize: '13px', fontWeight: '700', color: med.totalStock <= med.reorderPoint ? 'var(--danger)' : 'var(--text-primary)' }}>{med.totalStock}</td>
+                          <td style={{ padding: '11px 16px', fontSize: '12px', color: 'var(--text-tertiary)' }}>{med.reorderPoint}</td>
+                          <td style={{ padding: '11px 16px', fontSize: '12px', color: med.daysToExpiry !== null && med.daysToExpiry <= 30 ? 'var(--danger)' : med.daysToExpiry !== null && med.daysToExpiry <= 90 ? 'var(--warning)' : 'var(--text-secondary)' }}>{med.expiryDate ?? '—'}{med.daysToExpiry !== null && med.daysToExpiry <= 90 && <span style={{ fontSize: '10px', marginLeft: '4px' }}>({med.daysToExpiry}d)</span>}</td>
+                          <td style={{ padding: '11px 16px' }}><span style={{ padding: '3px 8px', borderRadius: '20px', fontSize: '11px', fontWeight: '600', background: `${stockColors[med.stockStatus] ?? '#6b7280'}12`, color: stockColors[med.stockStatus] ?? '#6b7280', border: `1px solid ${stockColors[med.stockStatus] ?? '#6b7280'}25` }}>{stockLabels[med.stockStatus] ?? med.stockStatus}</span></td>
+                          <td style={{ padding: '11px 16px' }}>{med.expiryStatus !== 'OK' ? <span style={{ padding: '3px 8px', borderRadius: '20px', fontSize: '11px', fontWeight: '600', background: med.expiryStatus === 'CRITICAL' ? 'var(--danger-bg)' : 'var(--warning-bg)', color: med.expiryStatus === 'CRITICAL' ? 'var(--danger)' : 'var(--warning)', border: `1px solid ${med.expiryStatus === 'CRITICAL' ? 'var(--danger-border)' : 'var(--warning-border)'}` }}>{med.expiryStatus === 'CRITICAL' ? 'Expiring Soon' : 'Warning'}</span> : <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>—</span>}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -336,102 +148,60 @@ export default function SuppliersPage() {
 
       {/* Email Draft Modal */}
       {emailDraft && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: '20px' }}>
-          <div style={{ background: '#0f172a', border: '1px solid rgba(59,130,246,0.3)', borderRadius: '20px', padding: '32px', width: '640px', maxWidth: '95vw', maxHeight: '90vh', overflowY: 'auto' }}>
-
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50, padding: '20px' }}>
+          <div style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-xl)', padding: '32px', width: '600px', maxWidth: '95vw', maxHeight: '90vh', overflowY: 'auto', boxShadow: 'var(--shadow-xl)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
-              <div>
-                <h2 style={{ fontSize: '18px', fontWeight: '700', margin: '0 0 4px 0' }}>Review & Send Supplier Email</h2>
-                <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px', margin: 0 }}>Remove medicines you don't want to order, then confirm</p>
-              </div>
-              <button onClick={() => setEmailDraft(null)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', cursor: 'pointer', fontSize: '22px', padding: '4px', lineHeight: 1 }}>×</button>
+              <div><h2 style={{ fontSize: '16px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '4px' }}>Review & Send Order Email</h2><p style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>Remove medicines you don't want to include, then confirm</p></div>
+              <button onClick={() => setEmailDraft(null)} style={{ background: 'none', border: 'none', color: 'var(--text-tertiary)', cursor: 'pointer', fontSize: '20px', padding: '4px', lineHeight: 1 }}>×</button>
             </div>
-
-            {/* To */}
             <div style={{ marginBottom: '14px' }}>
-              <label style={{ display: 'block', fontSize: '11px', color: 'rgba(255,255,255,0.4)', marginBottom: '6px', textTransform: 'uppercase' as const, letterSpacing: '0.5px' }}>To</label>
+              <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>To</label>
               <input value={emailDraft.supplierEmail} onChange={e => setEmailDraft({ ...emailDraft, supplierEmail: e.target.value })} style={iStyle} />
             </div>
-
-            {/* Subject */}
-            <div style={{ marginBottom: '20px' }}>
-              <label style={{ display: 'block', fontSize: '11px', color: 'rgba(255,255,255,0.4)', marginBottom: '6px', textTransform: 'uppercase' as const, letterSpacing: '0.5px' }}>Subject</label>
+            <div style={{ marginBottom: '16px' }}>
+              <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Subject</label>
               <input value={emailDraft.subject} onChange={e => setEmailDraft({ ...emailDraft, subject: e.target.value })} style={iStyle} />
             </div>
-
-            {/* Medicine order list */}
-            <div style={{ marginBottom: '20px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                <label style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase' as const, letterSpacing: '0.5px' }}>
-                  Medicines in this order ({emailDraft.selectedMedicines.length})
-                </label>
-                <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.25)' }}>Click × to remove from order</span>
+            <div style={{ marginBottom: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <label style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Medicines in Order ({emailDraft.selectedMedicines.length})</label>
+                <span style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Click × to remove</span>
               </div>
-
               {emailDraft.selectedMedicines.length === 0 ? (
-                <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: '10px', padding: '14px', textAlign: 'center', fontSize: '13px', color: '#f87171' }}>
-                  No medicines in order — add at least one to send
-                </div>
+                <div style={{ background: 'var(--danger-bg)', border: '1px solid var(--danger-border)', borderRadius: 'var(--radius-md)', padding: '12px', textAlign: 'center', fontSize: '12px', color: 'var(--danger)' }}>No medicines — add at least one</div>
               ) : (
-                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '10px', overflow: 'hidden' }}>
+                <div style={{ background: 'var(--bg-surface-2)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)', overflow: 'hidden' }}>
                   {emailDraft.selectedMedicines.map((med, i) => (
-                    <div key={med.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: i < emailDraft.selectedMedicines.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
-                      <div style={{ flex: 1, minWidth: 0 }}>
+                    <div key={med.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 14px', borderBottom: i < emailDraft.selectedMedicines.length - 1 ? '1px solid var(--border-subtle)' : 'none' }}>
+                      <div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <span style={{ fontSize: '13px', fontWeight: '500' }}>{med.name}</span>
-                          <span style={{ fontSize: '10px', fontFamily: 'monospace', color: 'rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.05)', padding: '1px 6px', borderRadius: '4px' }}>{med.sku}</span>
-                          <span style={{ padding: '2px 7px', borderRadius: '20px', fontSize: '10px', fontWeight: '600', background: `${stockColors[med.stockStatus] ?? '#6b7280'}20`, color: stockColors[med.stockStatus] ?? '#6b7280' }}>
-                            {stockLabels[med.stockStatus] ?? med.stockStatus}
-                          </span>
+                          <span style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-primary)' }}>{med.name}</span>
+                          <span style={{ fontSize: '10px', fontFamily: 'monospace', color: 'var(--text-tertiary)', background: 'var(--bg-surface-3)', padding: '1px 6px', borderRadius: '4px' }}>{med.sku}</span>
+                          <span style={{ padding: '2px 6px', borderRadius: '20px', fontSize: '10px', fontWeight: '600', background: `${stockColors[med.stockStatus] ?? '#6b7280'}12`, color: stockColors[med.stockStatus] ?? '#6b7280' }}>{stockLabels[med.stockStatus]}</span>
                         </div>
-                        <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', marginTop: '3px' }}>
-                          Stock: {med.totalStock} · ROP: {med.reorderPoint} · Order qty: {med.reorderPoint * 2}
-                          {med.expiryStatus !== 'OK' && <span style={{ marginLeft: '8px', color: '#f59e0b' }}>· Expiry: {med.expiryDate} ({med.daysToExpiry}d)</span>}
-                        </div>
+                        <div style={{ fontSize: '11px', color: 'var(--text-tertiary)', marginTop: '2px' }}>Stock: {med.totalStock} · ROP: {med.reorderPoint} · Order: {med.reorderPoint * 2} units</div>
                       </div>
-                      <button
-                        onClick={() => removeMedicineFromDraft(med.id)}
-                        title="Remove from order"
-                        style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#f87171', cursor: 'pointer', fontSize: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginLeft: '12px', fontFamily: 'DM Sans, sans-serif', lineHeight: 1 }}
-                      >×</button>
+                      <button onClick={() => removeMedicineFromDraft(med.id)} style={{ width: '26px', height: '26px', borderRadius: '6px', background: 'var(--danger-bg)', border: '1px solid var(--danger-border)', color: 'var(--danger)', cursor: 'pointer', fontSize: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginLeft: '12px', fontFamily: 'inherit' }}>×</button>
                     </div>
                   ))}
                 </div>
               )}
             </div>
-
-            {/* Email preview */}
             <div style={{ marginBottom: '24px' }}>
-              <label style={{ display: 'block', fontSize: '11px', color: 'rgba(255,255,255,0.4)', marginBottom: '6px', textTransform: 'uppercase' as const, letterSpacing: '0.5px' }}>Email Preview</label>
-              <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '10px', padding: '14px 16px', fontSize: '12px', color: 'rgba(255,255,255,0.6)', lineHeight: '1.7', whiteSpace: 'pre-wrap', fontFamily: 'monospace', maxHeight: '180px', overflowY: 'auto' }}>
-                {emailDraft.selectedMedicines.length > 0
-                  ? buildEmailBody(emailDraft.supplierName, emailDraft.selectedMedicines)
-                  : 'Remove all medicines to see an empty preview...'}
+              <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Email Preview</label>
+              <div style={{ background: 'var(--bg-surface-2)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)', padding: '14px', fontSize: '12px', color: 'var(--text-secondary)', lineHeight: '1.7', whiteSpace: 'pre-wrap', fontFamily: 'monospace', maxHeight: '160px', overflowY: 'auto' }}>
+                {emailDraft.selectedMedicines.length > 0 ? buildEmailBody(emailDraft.supplierName, emailDraft.selectedMedicines) : 'No medicines selected...'}
               </div>
-              <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.2)', marginTop: '6px' }}>This preview updates live as you remove medicines.</p>
             </div>
-
-            {!emailDraft.supplierEmail && (
-              <div style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.2)', borderRadius: '8px', padding: '10px 14px', marginBottom: '16px', fontSize: '12px', color: '#f59e0b' }}>
-                ⚠ No supplier email configured. Add an email address in the To field above.
-              </div>
-            )}
-
             <div style={{ display: 'flex', gap: '10px' }}>
-              <button onClick={() => setEmailDraft(null)} style={{ flex: 1, padding: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: 'rgba(255,255,255,0.5)', cursor: 'pointer', fontSize: '13px', fontFamily: 'DM Sans, sans-serif' }}>Cancel</button>
-              <button
-                onClick={sendEmail}
-                disabled={sending || !emailDraft.supplierEmail || emailDraft.selectedMedicines.length === 0}
-                style={{ flex: 2, padding: '12px', background: (sending || !emailDraft.supplierEmail || emailDraft.selectedMedicines.length === 0) ? 'rgba(59,130,246,0.3)' : 'linear-gradient(135deg, #3b82f6, #2563eb)', border: 'none', borderRadius: '10px', color: 'white', fontSize: '13px', fontWeight: '700', cursor: (sending || !emailDraft.supplierEmail || emailDraft.selectedMedicines.length === 0) ? 'not-allowed' : 'pointer', fontFamily: 'DM Sans, sans-serif' }}
-              >
+              <button onClick={() => setEmailDraft(null)} style={{ flex: 1, padding: '11px', background: 'var(--bg-surface-2)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '13px', fontFamily: 'inherit' }}>Cancel</button>
+              <button onClick={sendEmail} disabled={sending || !emailDraft.supplierEmail || emailDraft.selectedMedicines.length === 0} style={{ flex: 2, padding: '11px', background: sending || !emailDraft.supplierEmail || emailDraft.selectedMedicines.length === 0 ? 'var(--bg-surface-3)' : 'var(--brand-primary)', border: 'none', borderRadius: 'var(--radius-md)', color: sending || !emailDraft.supplierEmail || emailDraft.selectedMedicines.length === 0 ? 'var(--text-tertiary)' : 'white', fontSize: '13px', fontWeight: '700', cursor: sending || !emailDraft.supplierEmail || emailDraft.selectedMedicines.length === 0 ? 'not-allowed' : 'pointer', fontFamily: 'inherit' }}>
                 {sending ? 'Sending...' : `✉ Confirm & Send (${emailDraft.selectedMedicines.length} medicine${emailDraft.selectedMedicines.length !== 1 ? 's' : ''})`}
               </button>
             </div>
           </div>
         </div>
       )}
-
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');*{box-sizing:border-box}::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px}@keyframes spin{to{transform:rotate(360deg)}}input::placeholder{color:rgba(255,255,255,0.2)}`}</style>
-    </div>
+    </AppLayout>
   )
 }
