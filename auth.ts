@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs'
 import { prisma } from './lib/prisma'
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  trustHost: true,
   providers: [
     Credentials({
       credentials: {
@@ -12,20 +13,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null
-
         const user = await prisma.user.findUnique({
           where: { email: credentials.email as string },
         })
-
         if (!user || !user.isActive) return null
-
         const passwordMatch = await bcrypt.compare(
           credentials.password as string,
           user.passwordHash
         )
-
         if (!passwordMatch) return null
-
         return {
           id: user.id,
           email: user.email,
