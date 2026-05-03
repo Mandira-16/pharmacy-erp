@@ -23,7 +23,7 @@ export default function ForecastingPage() {
     if (status !== 'authenticated') return
     const fetchModel = async () => {
       try {
-        const res = await fetch('http://localhost:5000/health')
+        const res = await fetch('https://comfortable-encouragement-production-fd8b.up.railway.app/health')
         if (!res.ok) throw new Error()
         const data = await res.json()
         setHealth(data); setConnected(true)
@@ -39,7 +39,7 @@ export default function ForecastingPage() {
       const medRes = await fetch('/api/inventory')
       const medData = await medRes.json()
       const medicines = (medData.medicines ?? []).map((m: any) => ({ medicine: m.name, category: m.category, current_stock: m.totalStock, avg_daily_sales: 15, unit_price: m.unitPrice, days_to_expiry: m.daysToExpiry ?? 365, medicine_id: m.id }))
-      const res = await fetch('http://localhost:5000/predict/batch', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ medicines }) })
+      const res = await fetch('https://comfortable-encouragement-production-fd8b.up.railway.app/predict/batch', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ medicines }) })
       const data = await res.json()
       setPredictions(data.results ?? [])
     } catch (e) { console.error(e) }
