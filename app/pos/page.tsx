@@ -107,7 +107,7 @@ export default function POSPage() {
       const res = await fetch('/api/patients', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newPatient),
+        body: JSON.stringify({ ...newPatient, consentFlag: false }),
       })
       const data = await res.json()
       if (data.error) throw new Error(data.error)
@@ -241,14 +241,10 @@ export default function POSPage() {
                   <input value={newPatient.email} onChange={e => setNewPatient({...newPatient, email: e.target.value})} placeholder="patient@email.com" type="email" style={iStyle} />
                 </div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px', background: 'var(--info-bg)', border: '1px solid var(--info-border)', borderRadius: 'var(--radius-md)', marginBottom: '20px', cursor: 'pointer' }} onClick={() => setNewPatient({...newPatient, consentFlag: !newPatient.consentFlag})}>
-                <div style={{ width: '18px', height: '18px', borderRadius: '4px', border: `2px solid ${newPatient.consentFlag ? 'var(--brand-primary)' : 'var(--border-strong)'}`, background: newPatient.consentFlag ? 'var(--brand-primary)' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'all 0.15s' }}>
-                  {newPatient.consentFlag && <span style={{ color: 'white', fontSize: '11px', fontWeight: '700' }}>✓</span>}
-                </div>
-                <div>
-                  <div style={{ fontSize: '12px', fontWeight: '600', color: 'var(--text-primary)' }}>PDPA Consent Granted</div>
-                  <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>Patient allows medication history to be recorded and viewed</div>
-                </div>
+              <div style={{ background: 'var(--info-bg)', border: '1px solid var(--info-border)', borderRadius: 'var(--radius-md)', padding: '12px 14px', marginBottom: '20px' }}>
+                <p style={{ fontSize: '12px', color: 'var(--info)', fontWeight: '500', lineHeight: '1.6' }}>
+                  🔒 <strong>PDPA Consent</strong> — The patient will be registered without consent by default. To grant access to medication history, go to <strong>Patient Records</strong> and use the OTP consent flow after registration.
+                </p>
               </div>
               <div style={{ display: 'flex', gap: '10px' }}>
                 <button onClick={() => setShowAddPatient(false)} style={{ flex: 1, padding: '11px', background: 'var(--bg-surface-2)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '13px', fontFamily: 'inherit' }}>Cancel</button>

@@ -52,14 +52,16 @@ export async function POST(req: Request) {
         const patient = await tx.patient.findUnique({ where: { id: patientId }, select: { consentFlag: true } })
         if (patient?.consentFlag) {
           for (const med of medicineNames) {
-            await (tx.patientHistory as any).create({
+            await tx.patientHistory.create({
               data: {
                 patientId,
                 medicineName: med.name,
                 quantity: med.quantity,
                 doctorName: doctorName || null,
                 doctorSlmc: doctorSlmc || null,
-                notes: doctorName ? `Prescribed by Dr. ${doctorName} (SLMC: ${doctorSlmc})` : 'Over-the-counter purchase',
+                notes: doctorName
+                  ? `Prescribed by ${doctorName} (${doctorSlmc})`
+                  : 'Over-the-counter purchase',
               },
             })
           }

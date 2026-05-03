@@ -72,7 +72,7 @@ export async function sendReceiptEmail(data: ReceiptEmailData) {
         data.doctorName
           ? `<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px 16px;margin-bottom:20px;">
               <p style="margin:0;font-size:12px;color:#3b82f6;font-weight:600;">PRESCRIPTION</p>
-              <p style="margin:4px 0 0;font-size:13px;color:#1e40af;">Dr. ${data.doctorName} — SLMC ${data.doctorSlmc}</p>
+              <p style="margin:4px 0 0;font-size:13px;color:#1e40af;">${data.doctorName} — ${data.doctorSlmc}</p>
             </div>`
           : ''
       }
