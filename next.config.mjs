@@ -5,6 +5,8 @@ const nextConfig = {
       '@prisma/client': './src/generated/prisma',
     },
   },
+  env: {
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL || '',
+  },
 };
-
 export default nextConfig;
