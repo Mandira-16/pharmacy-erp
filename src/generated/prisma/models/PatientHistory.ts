@@ -20,14 +20,28 @@ export type PatientHistoryModel = runtime.Types.Result.DefaultSelection<Prisma.$
 
 export type AggregatePatientHistory = {
   _count: PatientHistoryCountAggregateOutputType | null
+  _avg: PatientHistoryAvgAggregateOutputType | null
+  _sum: PatientHistorySumAggregateOutputType | null
   _min: PatientHistoryMinAggregateOutputType | null
   _max: PatientHistoryMaxAggregateOutputType | null
+}
+
+export type PatientHistoryAvgAggregateOutputType = {
+  quantity: number | null
+}
+
+export type PatientHistorySumAggregateOutputType = {
+  quantity: number | null
 }
 
 export type PatientHistoryMinAggregateOutputType = {
   id: string | null
   date: Date | null
   notes: string | null
+  medicineName: string | null
+  quantity: number | null
+  doctorName: string | null
+  doctorSlmc: string | null
   patientId: string | null
 }
 
@@ -35,6 +49,10 @@ export type PatientHistoryMaxAggregateOutputType = {
   id: string | null
   date: Date | null
   notes: string | null
+  medicineName: string | null
+  quantity: number | null
+  doctorName: string | null
+  doctorSlmc: string | null
   patientId: string | null
 }
 
@@ -42,15 +60,31 @@ export type PatientHistoryCountAggregateOutputType = {
   id: number
   date: number
   notes: number
+  medicineName: number
+  quantity: number
+  doctorName: number
+  doctorSlmc: number
   patientId: number
   _all: number
 }
 
 
+export type PatientHistoryAvgAggregateInputType = {
+  quantity?: true
+}
+
+export type PatientHistorySumAggregateInputType = {
+  quantity?: true
+}
+
 export type PatientHistoryMinAggregateInputType = {
   id?: true
   date?: true
   notes?: true
+  medicineName?: true
+  quantity?: true
+  doctorName?: true
+  doctorSlmc?: true
   patientId?: true
 }
 
@@ -58,6 +92,10 @@ export type PatientHistoryMaxAggregateInputType = {
   id?: true
   date?: true
   notes?: true
+  medicineName?: true
+  quantity?: true
+  doctorName?: true
+  doctorSlmc?: true
   patientId?: true
 }
 
@@ -65,6 +103,10 @@ export type PatientHistoryCountAggregateInputType = {
   id?: true
   date?: true
   notes?: true
+  medicineName?: true
+  quantity?: true
+  doctorName?: true
+  doctorSlmc?: true
   patientId?: true
   _all?: true
 }
@@ -107,6 +149,18 @@ export type PatientHistoryAggregateArgs<ExtArgs extends runtime.Types.Extensions
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: PatientHistoryAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: PatientHistorySumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: PatientHistoryMinAggregateInputType
@@ -137,6 +191,8 @@ export type PatientHistoryGroupByArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   _count?: PatientHistoryCountAggregateInputType | true
+  _avg?: PatientHistoryAvgAggregateInputType
+  _sum?: PatientHistorySumAggregateInputType
   _min?: PatientHistoryMinAggregateInputType
   _max?: PatientHistoryMaxAggregateInputType
 }
@@ -145,8 +201,14 @@ export type PatientHistoryGroupByOutputType = {
   id: string
   date: Date
   notes: string | null
+  medicineName: string | null
+  quantity: number | null
+  doctorName: string | null
+  doctorSlmc: string | null
   patientId: string
   _count: PatientHistoryCountAggregateOutputType | null
+  _avg: PatientHistoryAvgAggregateOutputType | null
+  _sum: PatientHistorySumAggregateOutputType | null
   _min: PatientHistoryMinAggregateOutputType | null
   _max: PatientHistoryMaxAggregateOutputType | null
 }
@@ -173,6 +235,10 @@ export type PatientHistoryWhereInput = {
   id?: Prisma.StringFilter<"PatientHistory"> | string
   date?: Prisma.DateTimeFilter<"PatientHistory"> | Date | string
   notes?: Prisma.StringNullableFilter<"PatientHistory"> | string | null
+  medicineName?: Prisma.StringNullableFilter<"PatientHistory"> | string | null
+  quantity?: Prisma.IntNullableFilter<"PatientHistory"> | number | null
+  doctorName?: Prisma.StringNullableFilter<"PatientHistory"> | string | null
+  doctorSlmc?: Prisma.StringNullableFilter<"PatientHistory"> | string | null
   patientId?: Prisma.StringFilter<"PatientHistory"> | string
   patient?: Prisma.XOR<Prisma.PatientScalarRelationFilter, Prisma.PatientWhereInput>
 }
@@ -181,6 +247,10 @@ export type PatientHistoryOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   date?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
+  medicineName?: Prisma.SortOrderInput | Prisma.SortOrder
+  quantity?: Prisma.SortOrderInput | Prisma.SortOrder
+  doctorName?: Prisma.SortOrderInput | Prisma.SortOrder
+  doctorSlmc?: Prisma.SortOrderInput | Prisma.SortOrder
   patientId?: Prisma.SortOrder
   patient?: Prisma.PatientOrderByWithRelationInput
 }
@@ -192,6 +262,10 @@ export type PatientHistoryWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.PatientHistoryWhereInput | Prisma.PatientHistoryWhereInput[]
   date?: Prisma.DateTimeFilter<"PatientHistory"> | Date | string
   notes?: Prisma.StringNullableFilter<"PatientHistory"> | string | null
+  medicineName?: Prisma.StringNullableFilter<"PatientHistory"> | string | null
+  quantity?: Prisma.IntNullableFilter<"PatientHistory"> | number | null
+  doctorName?: Prisma.StringNullableFilter<"PatientHistory"> | string | null
+  doctorSlmc?: Prisma.StringNullableFilter<"PatientHistory"> | string | null
   patientId?: Prisma.StringFilter<"PatientHistory"> | string
   patient?: Prisma.XOR<Prisma.PatientScalarRelationFilter, Prisma.PatientWhereInput>
 }, "id">
@@ -200,10 +274,16 @@ export type PatientHistoryOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   date?: Prisma.SortOrder
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
+  medicineName?: Prisma.SortOrderInput | Prisma.SortOrder
+  quantity?: Prisma.SortOrderInput | Prisma.SortOrder
+  doctorName?: Prisma.SortOrderInput | Prisma.SortOrder
+  doctorSlmc?: Prisma.SortOrderInput | Prisma.SortOrder
   patientId?: Prisma.SortOrder
   _count?: Prisma.PatientHistoryCountOrderByAggregateInput
+  _avg?: Prisma.PatientHistoryAvgOrderByAggregateInput
   _max?: Prisma.PatientHistoryMaxOrderByAggregateInput
   _min?: Prisma.PatientHistoryMinOrderByAggregateInput
+  _sum?: Prisma.PatientHistorySumOrderByAggregateInput
 }
 
 export type PatientHistoryScalarWhereWithAggregatesInput = {
@@ -213,6 +293,10 @@ export type PatientHistoryScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"PatientHistory"> | string
   date?: Prisma.DateTimeWithAggregatesFilter<"PatientHistory"> | Date | string
   notes?: Prisma.StringNullableWithAggregatesFilter<"PatientHistory"> | string | null
+  medicineName?: Prisma.StringNullableWithAggregatesFilter<"PatientHistory"> | string | null
+  quantity?: Prisma.IntNullableWithAggregatesFilter<"PatientHistory"> | number | null
+  doctorName?: Prisma.StringNullableWithAggregatesFilter<"PatientHistory"> | string | null
+  doctorSlmc?: Prisma.StringNullableWithAggregatesFilter<"PatientHistory"> | string | null
   patientId?: Prisma.StringWithAggregatesFilter<"PatientHistory"> | string
 }
 
@@ -220,6 +304,10 @@ export type PatientHistoryCreateInput = {
   id?: string
   date?: Date | string
   notes?: string | null
+  medicineName?: string | null
+  quantity?: number | null
+  doctorName?: string | null
+  doctorSlmc?: string | null
   patient: Prisma.PatientCreateNestedOneWithoutHistoryInput
 }
 
@@ -227,6 +315,10 @@ export type PatientHistoryUncheckedCreateInput = {
   id?: string
   date?: Date | string
   notes?: string | null
+  medicineName?: string | null
+  quantity?: number | null
+  doctorName?: string | null
+  doctorSlmc?: string | null
   patientId: string
 }
 
@@ -234,6 +326,10 @@ export type PatientHistoryUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  medicineName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  doctorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  doctorSlmc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patient?: Prisma.PatientUpdateOneRequiredWithoutHistoryNestedInput
 }
 
@@ -241,6 +337,10 @@ export type PatientHistoryUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  medicineName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  doctorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  doctorSlmc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
@@ -248,6 +348,10 @@ export type PatientHistoryCreateManyInput = {
   id?: string
   date?: Date | string
   notes?: string | null
+  medicineName?: string | null
+  quantity?: number | null
+  doctorName?: string | null
+  doctorSlmc?: string | null
   patientId: string
 }
 
@@ -255,12 +359,20 @@ export type PatientHistoryUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  medicineName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  doctorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  doctorSlmc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type PatientHistoryUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  medicineName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  doctorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  doctorSlmc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   patientId?: Prisma.StringFieldUpdateOperationsInput | string
 }
 
@@ -278,13 +390,25 @@ export type PatientHistoryCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   date?: Prisma.SortOrder
   notes?: Prisma.SortOrder
+  medicineName?: Prisma.SortOrder
+  quantity?: Prisma.SortOrder
+  doctorName?: Prisma.SortOrder
+  doctorSlmc?: Prisma.SortOrder
   patientId?: Prisma.SortOrder
+}
+
+export type PatientHistoryAvgOrderByAggregateInput = {
+  quantity?: Prisma.SortOrder
 }
 
 export type PatientHistoryMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   date?: Prisma.SortOrder
   notes?: Prisma.SortOrder
+  medicineName?: Prisma.SortOrder
+  quantity?: Prisma.SortOrder
+  doctorName?: Prisma.SortOrder
+  doctorSlmc?: Prisma.SortOrder
   patientId?: Prisma.SortOrder
 }
 
@@ -292,7 +416,15 @@ export type PatientHistoryMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   date?: Prisma.SortOrder
   notes?: Prisma.SortOrder
+  medicineName?: Prisma.SortOrder
+  quantity?: Prisma.SortOrder
+  doctorName?: Prisma.SortOrder
+  doctorSlmc?: Prisma.SortOrder
   patientId?: Prisma.SortOrder
+}
+
+export type PatientHistorySumOrderByAggregateInput = {
+  quantity?: Prisma.SortOrder
 }
 
 export type PatientHistoryCreateNestedManyWithoutPatientInput = {
@@ -337,16 +469,32 @@ export type PatientHistoryUncheckedUpdateManyWithoutPatientNestedInput = {
   deleteMany?: Prisma.PatientHistoryScalarWhereInput | Prisma.PatientHistoryScalarWhereInput[]
 }
 
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type PatientHistoryCreateWithoutPatientInput = {
   id?: string
   date?: Date | string
   notes?: string | null
+  medicineName?: string | null
+  quantity?: number | null
+  doctorName?: string | null
+  doctorSlmc?: string | null
 }
 
 export type PatientHistoryUncheckedCreateWithoutPatientInput = {
   id?: string
   date?: Date | string
   notes?: string | null
+  medicineName?: string | null
+  quantity?: number | null
+  doctorName?: string | null
+  doctorSlmc?: string | null
 }
 
 export type PatientHistoryCreateOrConnectWithoutPatientInput = {
@@ -382,6 +530,10 @@ export type PatientHistoryScalarWhereInput = {
   id?: Prisma.StringFilter<"PatientHistory"> | string
   date?: Prisma.DateTimeFilter<"PatientHistory"> | Date | string
   notes?: Prisma.StringNullableFilter<"PatientHistory"> | string | null
+  medicineName?: Prisma.StringNullableFilter<"PatientHistory"> | string | null
+  quantity?: Prisma.IntNullableFilter<"PatientHistory"> | number | null
+  doctorName?: Prisma.StringNullableFilter<"PatientHistory"> | string | null
+  doctorSlmc?: Prisma.StringNullableFilter<"PatientHistory"> | string | null
   patientId?: Prisma.StringFilter<"PatientHistory"> | string
 }
 
@@ -389,24 +541,40 @@ export type PatientHistoryCreateManyPatientInput = {
   id?: string
   date?: Date | string
   notes?: string | null
+  medicineName?: string | null
+  quantity?: number | null
+  doctorName?: string | null
+  doctorSlmc?: string | null
 }
 
 export type PatientHistoryUpdateWithoutPatientInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  medicineName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  doctorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  doctorSlmc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type PatientHistoryUncheckedUpdateWithoutPatientInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  medicineName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  doctorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  doctorSlmc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type PatientHistoryUncheckedUpdateManyWithoutPatientInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  medicineName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  doctorName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  doctorSlmc?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -415,6 +583,10 @@ export type PatientHistorySelect<ExtArgs extends runtime.Types.Extensions.Intern
   id?: boolean
   date?: boolean
   notes?: boolean
+  medicineName?: boolean
+  quantity?: boolean
+  doctorName?: boolean
+  doctorSlmc?: boolean
   patientId?: boolean
   patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["patientHistory"]>
@@ -423,6 +595,10 @@ export type PatientHistorySelectCreateManyAndReturn<ExtArgs extends runtime.Type
   id?: boolean
   date?: boolean
   notes?: boolean
+  medicineName?: boolean
+  quantity?: boolean
+  doctorName?: boolean
+  doctorSlmc?: boolean
   patientId?: boolean
   patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["patientHistory"]>
@@ -431,6 +607,10 @@ export type PatientHistorySelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   id?: boolean
   date?: boolean
   notes?: boolean
+  medicineName?: boolean
+  quantity?: boolean
+  doctorName?: boolean
+  doctorSlmc?: boolean
   patientId?: boolean
   patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["patientHistory"]>
@@ -439,10 +619,14 @@ export type PatientHistorySelectScalar = {
   id?: boolean
   date?: boolean
   notes?: boolean
+  medicineName?: boolean
+  quantity?: boolean
+  doctorName?: boolean
+  doctorSlmc?: boolean
   patientId?: boolean
 }
 
-export type PatientHistoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "date" | "notes" | "patientId", ExtArgs["result"]["patientHistory"]>
+export type PatientHistoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "date" | "notes" | "medicineName" | "quantity" | "doctorName" | "doctorSlmc" | "patientId", ExtArgs["result"]["patientHistory"]>
 export type PatientHistoryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   patient?: boolean | Prisma.PatientDefaultArgs<ExtArgs>
 }
@@ -462,6 +646,10 @@ export type $PatientHistoryPayload<ExtArgs extends runtime.Types.Extensions.Inte
     id: string
     date: Date
     notes: string | null
+    medicineName: string | null
+    quantity: number | null
+    doctorName: string | null
+    doctorSlmc: string | null
     patientId: string
   }, ExtArgs["result"]["patientHistory"]>
   composites: {}
@@ -890,6 +1078,10 @@ export interface PatientHistoryFieldRefs {
   readonly id: Prisma.FieldRef<"PatientHistory", 'String'>
   readonly date: Prisma.FieldRef<"PatientHistory", 'DateTime'>
   readonly notes: Prisma.FieldRef<"PatientHistory", 'String'>
+  readonly medicineName: Prisma.FieldRef<"PatientHistory", 'String'>
+  readonly quantity: Prisma.FieldRef<"PatientHistory", 'Int'>
+  readonly doctorName: Prisma.FieldRef<"PatientHistory", 'String'>
+  readonly doctorSlmc: Prisma.FieldRef<"PatientHistory", 'String'>
   readonly patientId: Prisma.FieldRef<"PatientHistory", 'String'>
 }
     

@@ -90,6 +90,10 @@ model PatientHistory {
   id        String   @id @default(cuid())
   date      DateTime @default(now())
   notes     String?
+  medicineName String?
+  quantity    Int?
+  doctorName  String?
+  doctorSlmc  String?
   patient   Patient  @relation(fields: [patientId], references: [id])
   patientId String
 }

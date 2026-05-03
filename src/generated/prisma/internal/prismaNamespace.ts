@@ -1260,6 +1260,10 @@ export const PatientHistoryScalarFieldEnum = {
   id: 'id',
   date: 'date',
   notes: 'notes',
+  medicineName: 'medicineName',
+  quantity: 'quantity',
+  doctorName: 'doctorName',
+  doctorSlmc: 'doctorSlmc',
   patientId: 'patientId'
 } as const
 
