@@ -308,18 +308,37 @@ export default function POSPage() {
               </div>
 
               {selectedPatient ? (
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 14px', background: 'var(--brand-primary-light)', border: '1px solid var(--info-border)', borderRadius: 'var(--radius-md)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--brand-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: '700', color: 'white', flexShrink: 0 }}>{selectedPatient.name[0]}</div>
-                    <div>
-                      <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--brand-primary)' }}>{selectedPatient.name}</div>
-                      <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>
-                        {selectedPatient.nic && <span>{selectedPatient.nic} · </span>}
-                        {selectedPatient.consentFlag ? <span style={{ color: 'var(--success)' }}>✓ PDPA Consent</span> : <span style={{ color: 'var(--warning)' }}>⚠ No Consent</span>}
+                <div>
+                  {/* Patient card */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 14px', background: 'var(--brand-primary-light)', border: '1px solid var(--info-border)', borderRadius: 'var(--radius-md)', marginBottom: '12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--brand-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontWeight: '700', color: 'white', flexShrink: 0 }}>{selectedPatient.name[0]}</div>
+                      <div>
+                        <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--brand-primary)' }}>{selectedPatient.name}</div>
+                        <div style={{ fontSize: '11px', color: 'var(--text-tertiary)' }}>
+                          {selectedPatient.nic && <span>{selectedPatient.nic} · </span>}
+                          {selectedPatient.consentFlag ? <span style={{ color: 'var(--success)' }}>✓ PDPA Consent</span> : <span style={{ color: 'var(--warning)' }}>⚠ No Consent</span>}
+                        </div>
+                      </div>
+                    </div>
+                    <button onClick={() => { setSelectedPatient(null); setPatientSearch(''); setDoctorName(''); setDoctorSlmc('') }} style={{ background: 'none', border: 'none', color: 'var(--text-tertiary)', cursor: 'pointer', fontSize: '18px', fontFamily: 'inherit' }}>×</button>
+                  </div>
+                  {/* Doctor details — always visible when patient is linked */}
+                  <div style={{ background: 'var(--bg-surface-2)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)', padding: '14px' }}>
+                    <div style={{ fontSize: '11px', fontWeight: '700', color: 'var(--text-secondary)', textTransform: 'uppercase' as const, letterSpacing: '0.5px', marginBottom: '10px' }}>
+                      Doctor Details <span style={{ fontSize: '10px', fontWeight: '400', color: 'var(--text-tertiary)', textTransform: 'none' as const }}>— required for scheduled medicines, optional for OTC</span>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '11px', fontWeight: '600', color: 'var(--text-tertiary)', marginBottom: '5px' }}>Doctor Name</label>
+                        <input value={doctorName} onChange={e => setDoctorName(e.target.value)} placeholder="Dr. Perera" style={{ ...iStyle, padding: '8px 12px', fontSize: '12px', background: 'var(--bg-surface)' }} />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '11px', fontWeight: '600', color: 'var(--text-tertiary)', marginBottom: '5px' }}>SLMC No.</label>
+                        <input value={doctorSlmc} onChange={e => setDoctorSlmc(e.target.value)} placeholder="SLMC/12345" style={{ ...iStyle, padding: '8px 12px', fontSize: '12px', background: 'var(--bg-surface)' }} />
                       </div>
                     </div>
                   </div>
-                  <button onClick={() => { setSelectedPatient(null); setPatientSearch('') }} style={{ background: 'none', border: 'none', color: 'var(--text-tertiary)', cursor: 'pointer', fontSize: '18px', fontFamily: 'inherit' }}>×</button>
                 </div>
               ) : (
                 <div style={{ position: 'relative' }}>
