@@ -6,3 +6,10 @@ buildCommand = "npx prisma generate && npm run build"
 startCommand = "npm run start"
 healthcheckPath = "/"
 healthcheckTimeout = 300
+
+[nixpacks]
+aptPkgs = ["libatomic1"]
+
+[nixpacks.variables]
+NODE_VERSION = "20"
+NIXPACKS_NODE_VERSION = "20"
