@@ -24,7 +24,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--bg-base)' }}>
       <Sidebar theme={theme} onThemeToggle={toggleTheme} />
-      <main style={{ flex: 1, overflowY: 'auto', minHeight: '100vh' }}>
+      <main style={{ flex: 1, overflowY: 'auto', minHeight: '100vh', minWidth: 0 }}>
         {children}
       </main>
     </div>
