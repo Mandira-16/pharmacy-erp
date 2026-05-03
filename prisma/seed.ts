@@ -85,6 +85,79 @@ async function main() {
   })
   console.log('✅ Suppliers created')
 
+  // ADD THIS TO YOUR EXISTING prisma/seed.ts file
+  // Add after the existing suppliers seeding section
+
+  // ── Patients ────────────────────────────────────────────────────────────────
+  const patients = [
+    {
+      id: 'patient-001',
+      name: 'Kumara Wijesekara',
+      nic: '700123456V',
+      phone: '077-1234567',
+      email: 'kumara.w@gmail.com',
+      consentFlag: true,
+    },
+    {
+      id: 'patient-002',
+      name: 'Samantha Rajapaksa',
+      nic: '850234567V',
+      phone: '071-2345678',
+      email: 'samantha.r@gmail.com',
+      consentFlag: true,
+    },
+    {
+      id: 'patient-003',
+      name: 'Nimal Jayawardena',
+      nic: '580345678V',
+      phone: '076-3456789',
+      email: null,
+      consentFlag: false,
+    },
+    {
+      id: 'patient-004',
+      name: 'Dilini Weerasinghe',
+      nic: '920456789V',
+      phone: '078-4567890',
+      email: 'dilini.w@yahoo.com',
+      consentFlag: false,
+    },
+    {
+      id: 'patient-005',
+      name: 'Ruwan Bandara',
+      nic: '800567890V',
+      phone: '072-5678901',
+      email: 'ruwan.b@gmail.com',
+      consentFlag: true,
+    },
+    {
+      id: 'patient-006',
+      name: 'Priyanka Fernando',
+      nic: '910678901V',
+      phone: '077-6789012',
+      email: 'priyanka.f@gmail.com',
+      consentFlag: true,
+    },
+    {
+      id: 'patient-007',
+      name: 'Sunil Perera',
+      nic: '650789012V',
+      phone: '071-7890123',
+      email: null,
+      consentFlag: true,
+    },
+  ]
+
+  for (const patient of patients) {
+    await prisma.patient.upsert({
+      where: { id: patient.id },
+      update: {},
+      create: patient,
+    })
+  }
+
+  console.log('✅ Patients seeded')
+
   // ── Medicines ──────────────────────────────────────────────────────────────
   // Mix of scenarios:
   // - Some with expiry < 90 days and surplus stock  → triggers FR12 Expiry Liquidation
