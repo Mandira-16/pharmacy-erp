@@ -1,10 +1,11 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { SessionProviderWrapper } from '../components/SessionWrapper'
+import { TooltipProvider } from '@/components/ui/tooltip'
 
 export const metadata: Metadata = {
-  title: 'SmartERP — Pharmacy Management',
-  description: 'AI-powered ERP system for SME pharmacies in Sri Lanka',
+  title: 'Ceylon Pharmacy — SmartERP',
+  description: 'Intelligent pharmacy management system',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -12,7 +13,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body>
         <SessionProviderWrapper>
-          {children}
+          <TooltipProvider>
+            {children}
+          </TooltipProvider>
         </SessionProviderWrapper>
       </body>
     </html>
