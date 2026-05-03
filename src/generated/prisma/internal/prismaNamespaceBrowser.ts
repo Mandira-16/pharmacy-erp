@@ -128,6 +128,11 @@ export const PatientScalarFieldEnum = {
   phone: 'phone',
   email: 'email',
   consentFlag: 'consentFlag',
+  consentOtp: 'consentOtp',
+  consentOtpExpiry: 'consentOtpExpiry',
+  consentGrantedAt: 'consentGrantedAt',
+  consentExpiresAt: 'consentExpiresAt',
+  consentRevokeToken: 'consentRevokeToken',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

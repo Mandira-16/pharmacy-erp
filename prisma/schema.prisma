@@ -80,6 +80,11 @@ model Patient {
   phone       String?
   email       String?
   consentFlag Boolean          @default(false)
+  consentOtp         String?
+  consentOtpExpiry   DateTime?
+  consentGrantedAt   DateTime?
+  consentExpiresAt   DateTime?
+  consentRevokeToken String?   @unique
   history     PatientHistory[]
   sales       Sale[]
   createdAt   DateTime         @default(now())

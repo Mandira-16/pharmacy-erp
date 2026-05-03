@@ -31,6 +31,11 @@ export type PatientMinAggregateOutputType = {
   phone: string | null
   email: string | null
   consentFlag: boolean | null
+  consentOtp: string | null
+  consentOtpExpiry: Date | null
+  consentGrantedAt: Date | null
+  consentExpiresAt: Date | null
+  consentRevokeToken: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -42,6 +47,11 @@ export type PatientMaxAggregateOutputType = {
   phone: string | null
   email: string | null
   consentFlag: boolean | null
+  consentOtp: string | null
+  consentOtpExpiry: Date | null
+  consentGrantedAt: Date | null
+  consentExpiresAt: Date | null
+  consentRevokeToken: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -53,6 +63,11 @@ export type PatientCountAggregateOutputType = {
   phone: number
   email: number
   consentFlag: number
+  consentOtp: number
+  consentOtpExpiry: number
+  consentGrantedAt: number
+  consentExpiresAt: number
+  consentRevokeToken: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -66,6 +81,11 @@ export type PatientMinAggregateInputType = {
   phone?: true
   email?: true
   consentFlag?: true
+  consentOtp?: true
+  consentOtpExpiry?: true
+  consentGrantedAt?: true
+  consentExpiresAt?: true
+  consentRevokeToken?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -77,6 +97,11 @@ export type PatientMaxAggregateInputType = {
   phone?: true
   email?: true
   consentFlag?: true
+  consentOtp?: true
+  consentOtpExpiry?: true
+  consentGrantedAt?: true
+  consentExpiresAt?: true
+  consentRevokeToken?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -88,6 +113,11 @@ export type PatientCountAggregateInputType = {
   phone?: true
   email?: true
   consentFlag?: true
+  consentOtp?: true
+  consentOtpExpiry?: true
+  consentGrantedAt?: true
+  consentExpiresAt?: true
+  consentRevokeToken?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -172,6 +202,11 @@ export type PatientGroupByOutputType = {
   phone: string | null
   email: string | null
   consentFlag: boolean
+  consentOtp: string | null
+  consentOtpExpiry: Date | null
+  consentGrantedAt: Date | null
+  consentExpiresAt: Date | null
+  consentRevokeToken: string | null
   createdAt: Date
   updatedAt: Date
   _count: PatientCountAggregateOutputType | null
@@ -204,6 +239,11 @@ export type PatientWhereInput = {
   phone?: Prisma.StringNullableFilter<"Patient"> | string | null
   email?: Prisma.StringNullableFilter<"Patient"> | string | null
   consentFlag?: Prisma.BoolFilter<"Patient"> | boolean
+  consentOtp?: Prisma.StringNullableFilter<"Patient"> | string | null
+  consentOtpExpiry?: Prisma.DateTimeNullableFilter<"Patient"> | Date | string | null
+  consentGrantedAt?: Prisma.DateTimeNullableFilter<"Patient"> | Date | string | null
+  consentExpiresAt?: Prisma.DateTimeNullableFilter<"Patient"> | Date | string | null
+  consentRevokeToken?: Prisma.StringNullableFilter<"Patient"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Patient"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Patient"> | Date | string
   history?: Prisma.PatientHistoryListRelationFilter
@@ -217,6 +257,11 @@ export type PatientOrderByWithRelationInput = {
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   consentFlag?: Prisma.SortOrder
+  consentOtp?: Prisma.SortOrderInput | Prisma.SortOrder
+  consentOtpExpiry?: Prisma.SortOrderInput | Prisma.SortOrder
+  consentGrantedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  consentExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  consentRevokeToken?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   history?: Prisma.PatientHistoryOrderByRelationAggregateInput
@@ -226,6 +271,7 @@ export type PatientOrderByWithRelationInput = {
 export type PatientWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   nic?: string
+  consentRevokeToken?: string
   AND?: Prisma.PatientWhereInput | Prisma.PatientWhereInput[]
   OR?: Prisma.PatientWhereInput[]
   NOT?: Prisma.PatientWhereInput | Prisma.PatientWhereInput[]
@@ -233,11 +279,15 @@ export type PatientWhereUniqueInput = Prisma.AtLeast<{
   phone?: Prisma.StringNullableFilter<"Patient"> | string | null
   email?: Prisma.StringNullableFilter<"Patient"> | string | null
   consentFlag?: Prisma.BoolFilter<"Patient"> | boolean
+  consentOtp?: Prisma.StringNullableFilter<"Patient"> | string | null
+  consentOtpExpiry?: Prisma.DateTimeNullableFilter<"Patient"> | Date | string | null
+  consentGrantedAt?: Prisma.DateTimeNullableFilter<"Patient"> | Date | string | null
+  consentExpiresAt?: Prisma.DateTimeNullableFilter<"Patient"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Patient"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Patient"> | Date | string
   history?: Prisma.PatientHistoryListRelationFilter
   sales?: Prisma.SaleListRelationFilter
-}, "id" | "nic">
+}, "id" | "nic" | "consentRevokeToken">
 
 export type PatientOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -246,6 +296,11 @@ export type PatientOrderByWithAggregationInput = {
   phone?: Prisma.SortOrderInput | Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
   consentFlag?: Prisma.SortOrder
+  consentOtp?: Prisma.SortOrderInput | Prisma.SortOrder
+  consentOtpExpiry?: Prisma.SortOrderInput | Prisma.SortOrder
+  consentGrantedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  consentExpiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  consentRevokeToken?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.PatientCountOrderByAggregateInput
@@ -263,6 +318,11 @@ export type PatientScalarWhereWithAggregatesInput = {
   phone?: Prisma.StringNullableWithAggregatesFilter<"Patient"> | string | null
   email?: Prisma.StringNullableWithAggregatesFilter<"Patient"> | string | null
   consentFlag?: Prisma.BoolWithAggregatesFilter<"Patient"> | boolean
+  consentOtp?: Prisma.StringNullableWithAggregatesFilter<"Patient"> | string | null
+  consentOtpExpiry?: Prisma.DateTimeNullableWithAggregatesFilter<"Patient"> | Date | string | null
+  consentGrantedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Patient"> | Date | string | null
+  consentExpiresAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Patient"> | Date | string | null
+  consentRevokeToken?: Prisma.StringNullableWithAggregatesFilter<"Patient"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Patient"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Patient"> | Date | string
 }
@@ -274,6 +334,11 @@ export type PatientCreateInput = {
   phone?: string | null
   email?: string | null
   consentFlag?: boolean
+  consentOtp?: string | null
+  consentOtpExpiry?: Date | string | null
+  consentGrantedAt?: Date | string | null
+  consentExpiresAt?: Date | string | null
+  consentRevokeToken?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   history?: Prisma.PatientHistoryCreateNestedManyWithoutPatientInput
@@ -287,6 +352,11 @@ export type PatientUncheckedCreateInput = {
   phone?: string | null
   email?: string | null
   consentFlag?: boolean
+  consentOtp?: string | null
+  consentOtpExpiry?: Date | string | null
+  consentGrantedAt?: Date | string | null
+  consentExpiresAt?: Date | string | null
+  consentRevokeToken?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   history?: Prisma.PatientHistoryUncheckedCreateNestedManyWithoutPatientInput
@@ -300,6 +370,11 @@ export type PatientUpdateInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   consentFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  consentOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  consentOtpExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  consentGrantedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  consentExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  consentRevokeToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   history?: Prisma.PatientHistoryUpdateManyWithoutPatientNestedInput
@@ -313,6 +388,11 @@ export type PatientUncheckedUpdateInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   consentFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  consentOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  consentOtpExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  consentGrantedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  consentExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  consentRevokeToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   history?: Prisma.PatientHistoryUncheckedUpdateManyWithoutPatientNestedInput
@@ -326,6 +406,11 @@ export type PatientCreateManyInput = {
   phone?: string | null
   email?: string | null
   consentFlag?: boolean
+  consentOtp?: string | null
+  consentOtpExpiry?: Date | string | null
+  consentGrantedAt?: Date | string | null
+  consentExpiresAt?: Date | string | null
+  consentRevokeToken?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -337,6 +422,11 @@ export type PatientUpdateManyMutationInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   consentFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  consentOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  consentOtpExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  consentGrantedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  consentExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  consentRevokeToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -348,6 +438,11 @@ export type PatientUncheckedUpdateManyInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   consentFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  consentOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  consentOtpExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  consentGrantedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  consentExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  consentRevokeToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -359,6 +454,11 @@ export type PatientCountOrderByAggregateInput = {
   phone?: Prisma.SortOrder
   email?: Prisma.SortOrder
   consentFlag?: Prisma.SortOrder
+  consentOtp?: Prisma.SortOrder
+  consentOtpExpiry?: Prisma.SortOrder
+  consentGrantedAt?: Prisma.SortOrder
+  consentExpiresAt?: Prisma.SortOrder
+  consentRevokeToken?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -370,6 +470,11 @@ export type PatientMaxOrderByAggregateInput = {
   phone?: Prisma.SortOrder
   email?: Prisma.SortOrder
   consentFlag?: Prisma.SortOrder
+  consentOtp?: Prisma.SortOrder
+  consentOtpExpiry?: Prisma.SortOrder
+  consentGrantedAt?: Prisma.SortOrder
+  consentExpiresAt?: Prisma.SortOrder
+  consentRevokeToken?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -381,6 +486,11 @@ export type PatientMinOrderByAggregateInput = {
   phone?: Prisma.SortOrder
   email?: Prisma.SortOrder
   consentFlag?: Prisma.SortOrder
+  consentOtp?: Prisma.SortOrder
+  consentOtpExpiry?: Prisma.SortOrder
+  consentGrantedAt?: Prisma.SortOrder
+  consentExpiresAt?: Prisma.SortOrder
+  consentRevokeToken?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -393,6 +503,10 @@ export type PatientScalarRelationFilter = {
 export type PatientNullableScalarRelationFilter = {
   is?: Prisma.PatientWhereInput | null
   isNot?: Prisma.PatientWhereInput | null
+}
+
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
 }
 
 export type PatientCreateNestedOneWithoutHistoryInput = {
@@ -432,6 +546,11 @@ export type PatientCreateWithoutHistoryInput = {
   phone?: string | null
   email?: string | null
   consentFlag?: boolean
+  consentOtp?: string | null
+  consentOtpExpiry?: Date | string | null
+  consentGrantedAt?: Date | string | null
+  consentExpiresAt?: Date | string | null
+  consentRevokeToken?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   sales?: Prisma.SaleCreateNestedManyWithoutPatientInput
@@ -444,6 +563,11 @@ export type PatientUncheckedCreateWithoutHistoryInput = {
   phone?: string | null
   email?: string | null
   consentFlag?: boolean
+  consentOtp?: string | null
+  consentOtpExpiry?: Date | string | null
+  consentGrantedAt?: Date | string | null
+  consentExpiresAt?: Date | string | null
+  consentRevokeToken?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   sales?: Prisma.SaleUncheckedCreateNestedManyWithoutPatientInput
@@ -472,6 +596,11 @@ export type PatientUpdateWithoutHistoryInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   consentFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  consentOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  consentOtpExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  consentGrantedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  consentExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  consentRevokeToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sales?: Prisma.SaleUpdateManyWithoutPatientNestedInput
@@ -484,6 +613,11 @@ export type PatientUncheckedUpdateWithoutHistoryInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   consentFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  consentOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  consentOtpExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  consentGrantedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  consentExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  consentRevokeToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sales?: Prisma.SaleUncheckedUpdateManyWithoutPatientNestedInput
@@ -496,6 +630,11 @@ export type PatientCreateWithoutSalesInput = {
   phone?: string | null
   email?: string | null
   consentFlag?: boolean
+  consentOtp?: string | null
+  consentOtpExpiry?: Date | string | null
+  consentGrantedAt?: Date | string | null
+  consentExpiresAt?: Date | string | null
+  consentRevokeToken?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   history?: Prisma.PatientHistoryCreateNestedManyWithoutPatientInput
@@ -508,6 +647,11 @@ export type PatientUncheckedCreateWithoutSalesInput = {
   phone?: string | null
   email?: string | null
   consentFlag?: boolean
+  consentOtp?: string | null
+  consentOtpExpiry?: Date | string | null
+  consentGrantedAt?: Date | string | null
+  consentExpiresAt?: Date | string | null
+  consentRevokeToken?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   history?: Prisma.PatientHistoryUncheckedCreateNestedManyWithoutPatientInput
@@ -536,6 +680,11 @@ export type PatientUpdateWithoutSalesInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   consentFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  consentOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  consentOtpExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  consentGrantedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  consentExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  consentRevokeToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   history?: Prisma.PatientHistoryUpdateManyWithoutPatientNestedInput
@@ -548,6 +697,11 @@ export type PatientUncheckedUpdateWithoutSalesInput = {
   phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   consentFlag?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  consentOtp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  consentOtpExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  consentGrantedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  consentExpiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  consentRevokeToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   history?: Prisma.PatientHistoryUncheckedUpdateManyWithoutPatientNestedInput
@@ -600,6 +754,11 @@ export type PatientSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   phone?: boolean
   email?: boolean
   consentFlag?: boolean
+  consentOtp?: boolean
+  consentOtpExpiry?: boolean
+  consentGrantedAt?: boolean
+  consentExpiresAt?: boolean
+  consentRevokeToken?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   history?: boolean | Prisma.Patient$historyArgs<ExtArgs>
@@ -614,6 +773,11 @@ export type PatientSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   phone?: boolean
   email?: boolean
   consentFlag?: boolean
+  consentOtp?: boolean
+  consentOtpExpiry?: boolean
+  consentGrantedAt?: boolean
+  consentExpiresAt?: boolean
+  consentRevokeToken?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["patient"]>
@@ -625,6 +789,11 @@ export type PatientSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   phone?: boolean
   email?: boolean
   consentFlag?: boolean
+  consentOtp?: boolean
+  consentOtpExpiry?: boolean
+  consentGrantedAt?: boolean
+  consentExpiresAt?: boolean
+  consentRevokeToken?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["patient"]>
@@ -636,11 +805,16 @@ export type PatientSelectScalar = {
   phone?: boolean
   email?: boolean
   consentFlag?: boolean
+  consentOtp?: boolean
+  consentOtpExpiry?: boolean
+  consentGrantedAt?: boolean
+  consentExpiresAt?: boolean
+  consentRevokeToken?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type PatientOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "nic" | "phone" | "email" | "consentFlag" | "createdAt" | "updatedAt", ExtArgs["result"]["patient"]>
+export type PatientOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "nic" | "phone" | "email" | "consentFlag" | "consentOtp" | "consentOtpExpiry" | "consentGrantedAt" | "consentExpiresAt" | "consentRevokeToken" | "createdAt" | "updatedAt", ExtArgs["result"]["patient"]>
 export type PatientInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   history?: boolean | Prisma.Patient$historyArgs<ExtArgs>
   sales?: boolean | Prisma.Patient$salesArgs<ExtArgs>
@@ -662,6 +836,11 @@ export type $PatientPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     phone: string | null
     email: string | null
     consentFlag: boolean
+    consentOtp: string | null
+    consentOtpExpiry: Date | null
+    consentGrantedAt: Date | null
+    consentExpiresAt: Date | null
+    consentRevokeToken: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["patient"]>
@@ -1095,6 +1274,11 @@ export interface PatientFieldRefs {
   readonly phone: Prisma.FieldRef<"Patient", 'String'>
   readonly email: Prisma.FieldRef<"Patient", 'String'>
   readonly consentFlag: Prisma.FieldRef<"Patient", 'Boolean'>
+  readonly consentOtp: Prisma.FieldRef<"Patient", 'String'>
+  readonly consentOtpExpiry: Prisma.FieldRef<"Patient", 'DateTime'>
+  readonly consentGrantedAt: Prisma.FieldRef<"Patient", 'DateTime'>
+  readonly consentExpiresAt: Prisma.FieldRef<"Patient", 'DateTime'>
+  readonly consentRevokeToken: Prisma.FieldRef<"Patient", 'String'>
   readonly createdAt: Prisma.FieldRef<"Patient", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Patient", 'DateTime'>
 }

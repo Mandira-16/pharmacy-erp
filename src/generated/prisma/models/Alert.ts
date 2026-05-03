@@ -455,10 +455,6 @@ export type EnumAlertSeverityFieldUpdateOperationsInput = {
   set?: $Enums.AlertSeverity
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type AlertCreateWithoutMedicineInput = {
   id?: string
   alertType: $Enums.AlertType
