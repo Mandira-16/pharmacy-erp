@@ -4,14 +4,14 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import AppLayout from '../../components/AppLayout'
-import { MedicineModal, AddBatchModal, DeleteMedicineModal } from '../../components/InventoryModals'
+import { AddMedicineModal, EditMedicineModal, AddBatchModal, DeleteMedicineModal } from '../../components/InventoryModals'
 
 interface Medicine { id: string; sku: string; name: string; genericName: string | null; category: string; batchNumber: string; totalStock: number; reorderPoint: number; expiryDate: string | null; daysToExpiry: number | null; unitPrice: number; status: string; supplier: string }
 interface KPIs { totalSKUs: number; totalValue: number; lowStockCount: number; expiring90: number; expiring30: number; categories: number; suppliers: number }
 
 const statusColors: Record<string, string> = { 'In Stock': '#10b981', 'Low Stock': '#f59e0b', 'Critical': '#ef4444', 'Out of Stock': '#ef4444' }
 
-function formatLKR(n: number) { if (n >= 1000000) return `LKR ${(n/1000000).toFixed(2)}M`; if (n >= 1000) return `LKR ${(n/1000).toFixed(1)}K`; return `LKR ${n.toFixed(0)}` }
+function formatLKR(n: number) { if (n >= 1000000) return `LKR ${(n / 1000000).toFixed(2)}M`; if (n >= 1000) return `LKR ${(n / 1000).toFixed(1)}K`; return `LKR ${n.toFixed(0)}` }
 
 export default function InventoryPage() {
   const { status } = useSession()
@@ -183,9 +183,9 @@ export default function InventoryPage() {
                 ) : filtered.map(med => {
                   const expiryColor = med.daysToExpiry !== null
                     ? med.daysToExpiry <= 30 ? 'var(--danger)'
-                    : med.daysToExpiry <= 60 ? '#f97316'
-                    : med.daysToExpiry <= 90 ? 'var(--warning)'
-                    : 'var(--text-secondary)'
+                      : med.daysToExpiry <= 60 ? '#f97316'
+                        : med.daysToExpiry <= 90 ? 'var(--warning)'
+                          : 'var(--text-secondary)'
                     : 'var(--text-secondary)'
                   return (
                     <tr
@@ -253,10 +253,16 @@ export default function InventoryPage() {
       </div>
 
       {/* ── CRUD Modals ─────────────────────────────────────────────────────── */}
-      {modalMode && (
-        <MedicineModal
-          mode={modalMode}
-          medicine={modalMode === 'edit' ? selectedMedicine : undefined}
+      {modalMode === 'add' && (
+        <AddMedicineModal
+          suppliers={suppliers}
+          onClose={() => setModalMode(null)}
+          onSuccess={fetchInventory}
+        />
+      )}
+      {modalMode === 'edit' && selectedMedicine && (
+        <EditMedicineModal
+          medicine={selectedMedicine}
           suppliers={suppliers}
           onClose={() => setModalMode(null)}
           onSuccess={fetchInventory}
@@ -264,14 +270,16 @@ export default function InventoryPage() {
       )}
       {showBatchModal && selectedMedicine && (
         <AddBatchModal
-          medicine={selectedMedicine}
+          medicineId={selectedMedicine.id}
+          medicineName={selectedMedicine.name}
           onClose={() => setShowBatchModal(false)}
           onSuccess={fetchInventory}
         />
       )}
       {showDeleteModal && selectedMedicine && (
         <DeleteMedicineModal
-          medicine={selectedMedicine}
+          medicineId={selectedMedicine.id}
+          medicineName={selectedMedicine.name}
           onClose={() => setShowDeleteModal(false)}
           onSuccess={fetchInventory}
         />
