@@ -1,8 +1,13 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { auth } from '@/auth'
+import { validatePatientForm } from '@/lib/validations'
 
 export async function GET(req: Request) {
   try {
+    const session = await auth()
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
     const { searchParams } = new URL(req.url)
     const search = searchParams.get('search') ?? ''
 
@@ -15,7 +20,7 @@ export async function GET(req: Request) {
         ],
       } : undefined,
       orderBy: { name: 'asc' },
-      select: { id: true, name: true, nic: true, phone: true, email: true, consentFlag: true, createdAt: true },
+      select: { id: true, name: true, nic: true, phone: true, email: true, consentFlag: true, createdAt: true, consentExpiresAt: true },
     })
 
     const result = patients.map((p, i) => ({ ...p, patientId: `PAT${String(i + 1).padStart(3, '0')}` }))
@@ -27,25 +32,36 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json()
-    const { name, nic, phone, email, consentFlag } = body
+    const session = await auth()
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-    if (!name) return NextResponse.json({ error: 'Name is required' }, { status: 400 })
+    const role = (session.user as any)?.role
+    if (!['ADMIN', 'PHARMACIST', 'ASSISTANT'].includes(role)) {
+      return NextResponse.json({ error: 'Permission denied' }, { status: 403 })
+    }
+
+    const body = await req.json()
+
+    // Validate
+    const validation = validatePatientForm(body)
+    if (!validation.valid) {
+      return NextResponse.json({ error: 'Validation failed', errors: validation.errors }, { status: 400 })
+    }
 
     const patient = await prisma.patient.create({
       data: {
-        name,
-        nic: nic || null,
-        phone: phone || null,
-        email: email || null,
-        consentFlag: consentFlag ?? true,
+        name: body.name.trim(),
+        nic: body.nic?.trim() || null,
+        phone: body.phone?.replace(/-/g, '').trim() || null,
+        email: body.email?.trim().toLowerCase() || null,
+        consentFlag: false, // Always false on registration — OTP required
       },
     })
 
     return NextResponse.json({ patient })
   } catch (err: any) {
     if (err.code === 'P2002') {
-      return NextResponse.json({ error: 'A patient with this NIC already exists' }, { status: 400 })
+      return NextResponse.json({ error: 'Validation failed', errors: { nic: 'A patient with this NIC already exists' } }, { status: 400 })
     }
     return NextResponse.json({ error: err.message }, { status: 500 })
   }
