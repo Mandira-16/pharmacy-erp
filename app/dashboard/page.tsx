@@ -1,7 +1,7 @@
 'use client'
 
 import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import AppLayout from '../../components/AppLayout'
 
@@ -13,8 +13,8 @@ interface CategoryData { label: string; pct: number; color: string }
 interface DashboardData { kpis: KPIs; chartData: ChartPoint[]; topMedicines: TopMed[]; smartAlerts: SmartAlert[]; categoryData: CategoryData[] }
 
 function fmt(n: number) {
-  if (n >= 1000000) return `LKR ${(n/1000000).toFixed(1)}M`
-  if (n >= 1000) return `LKR ${(n/1000).toFixed(1)}K`
+  if (n >= 1000000) return `LKR ${(n / 1000000).toFixed(1)}M`
+  if (n >= 1000) return `LKR ${(n / 1000).toFixed(1)}K`
   return `LKR ${n.toFixed(0)}`
 }
 
@@ -40,6 +40,8 @@ function KPICard({ label, value, sub, color, icon }: { label: string; value: str
 export default function DashboardPage() {
   const { status } = useSession()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const denied = searchParams.get('denied')
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -108,8 +110,8 @@ export default function DashboardPage() {
               {chartData.map((d, i) => (
                 <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end', gap: '4px' }}>
                   <div style={{ display: 'flex', gap: '2px', alignItems: 'flex-end', width: '100%' }}>
-                    {d.actual > 0 && <div style={{ flex: 1, height: `${Math.max((d.actual/maxVal)*130, 2)}px`, background: 'linear-gradient(180deg, #10b981, #059669)', borderRadius: '3px 3px 0 0' }} />}
-                    <div style={{ flex: 1, height: `${Math.max((d.forecast/maxVal)*130, 2)}px`, background: '#2563eb20', borderRadius: '3px 3px 0 0', border: '1px solid #2563eb40', borderBottom: 'none' }} />
+                    {d.actual > 0 && <div style={{ flex: 1, height: `${Math.max((d.actual / maxVal) * 130, 2)}px`, background: 'linear-gradient(180deg, #10b981, #059669)', borderRadius: '3px 3px 0 0' }} />}
+                    <div style={{ flex: 1, height: `${Math.max((d.forecast / maxVal) * 130, 2)}px`, background: '#2563eb20', borderRadius: '3px 3px 0 0', border: '1px solid #2563eb40', borderBottom: 'none' }} />
                   </div>
                   <span style={{ fontSize: '9px', color: 'var(--text-tertiary)', fontWeight: '500' }}>{d.month}</span>
                 </div>
