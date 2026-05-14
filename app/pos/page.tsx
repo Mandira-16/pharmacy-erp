@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useRef, useCallback } from 'react'
 import AppLayout from '../../components/AppLayout'
+import { useToast } from '../../components/Toast'
 import { validatePatientForm } from '@/lib/validations'
 
 interface Medicine { id: string; sku: string; name: string; genericName: string | null; category: string; unitPrice: number; totalStock: number; scheduleType: string | null; daysToExpiry: number | null }
@@ -16,6 +17,7 @@ function formatLKR(n: number) { return `LKR ${n.toLocaleString('en-LK', { minimu
 export default function POSPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
+  const { showToast } = useToast()
 
   // Medicine search
   const [searchQuery, setSearchQuery] = useState('')
@@ -120,6 +122,7 @@ export default function POSPage() {
         else setError(data.error)
         return
       }
+      showToast(`Patient ${data.patient.name} registered successfully`)
       setSelectedPatient(data.patient)
       setShowAddPatient(false)
       setNewPatient({ name: '', nic: '', phone: '', email: '', consentFlag: true })
@@ -145,6 +148,7 @@ export default function POSPage() {
       const data = await res.json()
       if (data.error) throw new Error(data.error)
       setReceipt({ saleId: data.saleId, items: [...cart], totalAmount, paymentMethod, patientName: selectedPatient?.name || 'Walk-in Customer', patientEmail: selectedPatient?.email || '', doctorName, doctorSlmc, emailSent: data.emailSent, saleDate: new Date().toLocaleString('en-LK') })
+      showToast(`Sale completed · ${formatLKR(data.totalAmount)}`, 'success')
       setCart([]); setSelectedPatient(null); setPatientSearch(''); setDoctorName(''); setDoctorSlmc('')
     } catch (e: any) { setError(e.message) }
     finally { setCheckingOut(false) }

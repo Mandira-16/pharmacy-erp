@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useToast } from './Toast'
 import { validateMedicineForm, validateBatchForm } from '@/lib/validations'
 
 interface Supplier { id: string; name: string }
@@ -24,6 +25,7 @@ function ModalOverlay({ children, onClose }: { children: React.ReactNode; onClos
 
 // ── Add Medicine Modal ────────────────────────────────────────────────────────
 export function AddMedicineModal({ onClose, onSuccess, suppliers }: { onClose: () => void; onSuccess: () => void; suppliers: Supplier[] }) {
+  const { showToast } = useToast()
   const [form, setForm] = useState({ name: '', genericName: '', sku: '', category: '', unitPrice: '', reorderPoint: '', scheduleType: 'OTC', supplierId: '', initialBatch: { batchNumber: '', quantity: '', expiryDate: '' } })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(false)
@@ -58,6 +60,7 @@ export function AddMedicineModal({ onClose, onSuccess, suppliers }: { onClose: (
       })
       const data = await res.json()
       if (data.error) { if (data.errors) setErrors(data.errors); else setApiError(data.error); return }
+      showToast('Medicine added successfully')
       onSuccess()
     } catch { setApiError('Failed to add medicine. Please try again.') }
     finally { setLoading(false) }
@@ -162,6 +165,7 @@ export function AddMedicineModal({ onClose, onSuccess, suppliers }: { onClose: (
 
 // ── Edit Medicine Modal ───────────────────────────────────────────────────────
 export function EditMedicineModal({ medicine, onClose, onSuccess, suppliers }: { medicine: Medicine; onClose: () => void; onSuccess: () => void; suppliers: Supplier[] }) {
+  const { showToast } = useToast()
   const [form, setForm] = useState({ name: medicine.name, genericName: medicine.genericName ?? '', category: medicine.category, unitPrice: medicine.unitPrice.toString(), reorderPoint: medicine.reorderPoint.toString(), scheduleType: medicine.scheduleType ?? 'OTC', supplierId: medicine.supplierId ?? '' })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(false)
@@ -185,6 +189,7 @@ export function EditMedicineModal({ medicine, onClose, onSuccess, suppliers }: {
       })
       const data = await res.json()
       if (data.error) { if (data.errors) setErrors(data.errors); else setApiError(data.error); return }
+      showToast('Medicine updated successfully')
       onSuccess()
     } catch { setApiError('Failed to update medicine.') }
     finally { setLoading(false) }
@@ -253,6 +258,7 @@ export function EditMedicineModal({ medicine, onClose, onSuccess, suppliers }: {
 
 // ── Add Batch Modal ───────────────────────────────────────────────────────────
 export function AddBatchModal({ medicineId, medicineName, onClose, onSuccess }: { medicineId: string; medicineName: string; onClose: () => void; onSuccess: () => void }) {
+  const { showToast } = useToast()
   const [form, setForm] = useState({ batchNumber: '', quantity: '', expiryDate: '' })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(false)
@@ -276,6 +282,7 @@ export function AddBatchModal({ medicineId, medicineName, onClose, onSuccess }: 
       })
       const data = await res.json()
       if (data.error) { if (data.errors) setErrors(data.errors); else setApiError(data.error); return }
+      showToast('Batch added successfully')
       onSuccess()
     } catch { setApiError('Failed to add batch.') }
     finally { setLoading(false) }
@@ -321,6 +328,7 @@ export function AddBatchModal({ medicineId, medicineName, onClose, onSuccess }: 
 
 // ── Delete Confirmation Modal ─────────────────────────────────────────────────
 export function DeleteMedicineModal({ medicineId, medicineName, onClose, onSuccess }: { medicineId: string; medicineName: string; onClose: () => void; onSuccess: () => void }) {
+  const { showToast } = useToast()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -330,6 +338,7 @@ export function DeleteMedicineModal({ medicineId, medicineName, onClose, onSucce
       const res = await fetch(`/api/medicines/${medicineId}`, { method: 'DELETE' })
       const data = await res.json()
       if (data.error) { setError(data.error); return }
+      showToast('Medicine deleted successfully', 'success')
       onSuccess()
     } catch { setError('Failed to delete medicine.') }
     finally { setLoading(false) }

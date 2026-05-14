@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import AppLayout from '../../components/AppLayout'
+import { useToast } from '../../components/Toast'
 
 interface Patient { id: string; name: string; nic: string | null; phone: string | null; email: string | null; consentFlag: boolean; consentExpiresAt?: string | null }
 interface HistoryRecord { id: string; date: string; medicineName: string; quantity: number | null; doctorName: string | null; doctorSlmc: string | null; notes: string | null }
@@ -12,6 +13,7 @@ interface PatientDetail { patient: Patient; history: HistoryRecord[] }
 export default function PatientsPage() {
   const { status } = useSession()
   const router = useRouter()
+  const { showToast } = useToast()
   const [patients, setPatients] = useState<Patient[]>([])
   const [selected, setSelected] = useState<PatientDetail | null>(null)
   const [loading, setLoading] = useState(true)
@@ -50,6 +52,7 @@ export default function PatientsPage() {
       const data = await res.json()
       if (data.error) throw new Error(data.error)
       setOtpPatientId(patientId)
+      showToast("OTP sent to patient's email", 'success')
       setConsentMsg({ type: 'success', text: `OTP sent to patient's email. Ask the patient for the code.` })
     } catch (e: any) { setConsentMsg({ type: 'error', text: e.message }) }
     finally { setRequestingConsent(null) }
@@ -64,6 +67,7 @@ export default function PatientsPage() {
       const data = await res.json()
       if (data.error) throw new Error(data.error)
       const expiresAt = new Date(data.expiresAt).toLocaleDateString('en-LK')
+      showToast(`✓ Consent granted — access valid until ${expiresAt}`, 'success')
       setConsentMsg({ type: 'success', text: `✓ Consent granted! Access valid until ${expiresAt}` })
       setOtpInput(''); setOtpPatientId(null)
       fetchPatients()
