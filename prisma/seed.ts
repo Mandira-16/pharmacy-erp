@@ -63,6 +63,18 @@ async function main() {
   })
   console.log('✅ Owner user created:', owner.email)
 
+  await prisma.user.upsert({
+  where: { email: 'assistant@pharmacy.com' },
+  update: {},
+  create: {
+    email: 'assistant@pharmacy.com',
+    name: 'Assistant Pharmacist',
+    passwordHash: await bcrypt.hash('Assistant@1234', 12),
+    role: 'ASSISTANT',
+    isActive: true,
+  },
+})
+
   // ── Suppliers ──────────────────────────────────────────────────────────────
   const supplier1 = await prisma.supplier.upsert({
     where: { id: 'supplier-001' },
@@ -84,9 +96,6 @@ async function main() {
     },
   })
   console.log('✅ Suppliers created')
-
-  // ADD THIS TO YOUR EXISTING prisma/seed.ts file
-  // Add after the existing suppliers seeding section
 
   // ── Patients ────────────────────────────────────────────────────────────────
   const patients = [
@@ -162,7 +171,6 @@ async function main() {
   // Mix of scenarios:
   // - Some with expiry < 90 days and surplus stock  → triggers FR12 Expiry Liquidation
   // - Some with low stock vs predicted demand       → triggers FR13 Stockout Risk
-  // - All have avgDailySales for FR11 Revenue Forecast
 
   const medicines = [
     {
