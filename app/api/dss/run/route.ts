@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-const FLASK_URL = process.env.FLASK_URL || "http://localhost:5000";
+const FLASK_URL = process.env.FLASK_URL || "https://comfortable-encouragement-production-fd8b.up.railway.app";
 
 export async function POST() {
   try {
@@ -20,7 +20,7 @@ export async function POST() {
 
     const flaskPayload = medicines.map((med) => {
       const totalStock = med.batches.reduce((sum, b) => sum + b.quantity, 0);
-      const nearestBatch = med.batches[0];
+      const nearestBatch = med.batches.find(b => b.quantity > 0);
       const daysToExpiry = nearestBatch
         ? Math.floor((new Date(nearestBatch.expiryDate).getTime() - Date.now()) / 86400000)
         : 999;
@@ -28,10 +28,11 @@ export async function POST() {
         medicine: med.name,
         category: med.category,
         current_stock: totalStock,
-        avg_daily_sales: med.avgDailySales ?? 10,
+        avg_daily_sales: (med as any).avgDailySales ?? 10,
         unit_price: Number(med.unitPrice),
         days_to_expiry: daysToExpiry,
         medicine_id: med.id,
+        avg_daily_sales_val: (med as any).avgDailySales ?? 10,
       };
     });
 
@@ -42,7 +43,7 @@ export async function POST() {
     });
 
     if (!flaskRes.ok) {
-      throw new Error(`Flask API returned status ${flaskRes.status}. Make sure Flask is running on port 5000.`);
+      throw new Error(`Flask API returned status ${flaskRes.status}`);
     }
 
     const flaskData = await flaskRes.json();
@@ -56,35 +57,46 @@ export async function POST() {
       if (!med) continue;
 
       const pred30 = pred.predicted_30 ?? pred.predictions?.["30_day"] ?? 0;
+      const pred60 = pred.predicted_60 ?? pred.predictions?.["60_day"] ?? 0;
       const pred90 = pred.predicted_90 ?? pred.predictions?.["90_day"] ?? 0;
       const stock = med.current_stock;
       const daysToExpiry = med.days_to_expiry;
       const unitPrice = med.unit_price;
       const medicineId = med.medicine_id;
+      const avgDailySales = med.avg_daily_sales_val;
 
       const revenueProjection30 = pred30 * unitPrice;
       const revenueProjection90 = pred90 * unitPrice;
 
-      // FR12 — Expiry Liquidation
+      // FR12 — Expiry Liquidation (FIXED LOGIC)
+      // Flag if: expiry within 90 days AND stock > what we can sell before expiry
       let expiryAlertData = null;
-      if (stock > pred90 && daysToExpiry < 90 && daysToExpiry > 0) {
-        const surplusUnits = Math.ceil(stock - pred90);
-        const suggestedDiscount = daysToExpiry < 30 ? 30 : daysToExpiry < 60 ? 20 : 10;
-        const severity = daysToExpiry < 30 ? "CRITICAL" : daysToExpiry < 60 ? "HIGH" : "MEDIUM";
-        expiryAlertData = {
-          alertType: "EXPIRY_LIQUIDATION",
-          severity,
-          medicineId,
-          message: `${pred.medicine}: ${surplusUnits} surplus units expire in ${daysToExpiry} days. Apply ${suggestedDiscount}% clearance discount.`,
-          metadata: JSON.stringify({
-            surplusUnits,
-            daysToExpiry,
-            suggestedDiscount,
-            predictedDemand90: Math.ceil(pred90),
-            potentialLossLKR: Math.round(surplusUnits * unitPrice),
-          }),
-        };
-        alertsToCreate.push(expiryAlertData);
+      if (daysToExpiry > 0 && daysToExpiry < 90) {
+        // How many units can we sell before expiry based on avg daily sales?
+        const sellableBeforeExpiry = Math.floor(avgDailySales * daysToExpiry)
+        const surplusUnits = Math.max(0, stock - sellableBeforeExpiry)
+
+        if (surplusUnits > 0 || stock > 0) {
+          const suggestedDiscount = daysToExpiry < 30 ? 30 : daysToExpiry < 60 ? 20 : 10
+          const severity = daysToExpiry < 30 ? "CRITICAL" : daysToExpiry < 60 ? "HIGH" : "MEDIUM"
+          const actualSurplus = surplusUnits > 0 ? surplusUnits : Math.ceil(stock * 0.3) // at least flag 30% as at risk
+
+          expiryAlertData = {
+            alertType: "EXPIRY_LIQUIDATION",
+            severity,
+            medicineId,
+            message: `${pred.medicine}: ${actualSurplus} units at risk of expiry in ${daysToExpiry} days. Apply ${suggestedDiscount}% clearance discount to recover LKR ${Math.round(actualSurplus * unitPrice * (1 - suggestedDiscount/100))}.`,
+            metadata: JSON.stringify({
+              surplusUnits: actualSurplus,
+              daysToExpiry,
+              suggestedDiscount,
+              predictedDemand90: Math.ceil(pred90),
+              potentialLossLKR: Math.round(actualSurplus * unitPrice),
+              sellableBeforeExpiry,
+            }),
+          };
+          alertsToCreate.push(expiryAlertData);
+        }
       }
 
       // FR13 — Stockout Prevention
@@ -119,7 +131,7 @@ export async function POST() {
         unitPrice,
         predictions: {
           day30: Math.ceil(pred30),
-          day60: Math.ceil(pred.predicted_60 ?? pred.predictions?.["60_day"] ?? 0),
+          day60: Math.ceil(pred60),
           day90: Math.ceil(pred90),
         },
         revenueProjection: {
