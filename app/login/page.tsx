@@ -369,51 +369,48 @@ export default function LoginPage() {
           <div className="left-logo">
             <div className="left-logo-icon">+</div>
             <div>
-              <div className="left-logo-text">Ceylon Pharmacy</div>
-              <div className="left-logo-sub">Colombo · Est. 1987</div>
+              <div className="left-logo-text">SmartERP</div>
+              <div className="left-logo-sub">Pharmacy</div>
             </div>
           </div>
 
           {/* Hero */}
           <div className="left-hero">
-            <div style={{ fontSize: '13px', fontWeight: '700', color: 'rgba(255,255,255,0.5)', letterSpacing: '3px', textTransform: 'uppercase', marginBottom: '16px' }}>
-              Since 1987 · Colombo, Sri Lanka
-            </div>
             <div className="left-tagline">
-              Your health,<br />
-              our commitment.<br />
-              <span>Every single day.</span>
+              Intelligent pharmacy<br />
+              management for<br />
+              <span>Sri Lanka's SMEs</span>
             </div>
             <div className="left-desc">
-              Ceylon Pharmacy has been serving the community with trusted medicines, professional care, and genuine concern for over 35 years. Now powered by smart technology to serve you better.
+              AI-powered demand forecasting, real-time inventory tracking, and prescriptive decision support — purpose-built for community pharmacies.
             </div>
             <div className="left-stats">
               <div className="stat-item">
-                <div className="stat-num">35+</div>
-                <div className="stat-label">Years of Trust</div>
+                <div className="stat-num">28.4%</div>
+                <div className="stat-label">Model MAPE</div>
               </div>
               <div className="stat-item">
-                <div className="stat-num">10K+</div>
-                <div className="stat-label">Patients Served</div>
+                <div className="stat-num">5×</div>
+                <div className="stat-label">Better than baseline</div>
               </div>
               <div className="stat-item">
-                <div className="stat-num">500+</div>
-                <div className="stat-label">Medicines</div>
+                <div className="stat-num">FR11–13</div>
+                <div className="stat-label">DSS Modules</div>
               </div>
             </div>
           </div>
 
           {/* Footer */}
           <div className="left-footer">
-            © 2026 Ceylon Pharmacy · Powered by SmartERP
+            © 2026 SmartERP · BSc Software Engineering · University of Plymouth
           </div>
         </div>
 
         {/* Right panel — login form */}
         <div className="right-panel">
           <div className="login-box">
-            <div className="login-heading">Good morning</div>
-            <div className="login-subheading">Sign in to Ceylon Pharmacy management system</div>
+            <div className="login-heading">Welcome back</div>
+            <div className="login-subheading">Sign in to your SmartERP account to continue</div>
 
             {error && (
               <div className="error-box">
@@ -463,6 +460,7 @@ export default function LoginPage() {
                 { role: 'Admin', email: 'admin@pharmacy.com', password: 'Admin@1234' },
                 { role: 'Pharmacist', email: 'pharmacist@pharmacy.com', password: 'Pharma@1234' },
                 { role: 'Owner', email: 'owner@pharmacy.com', password: 'Owner@1234' },
+                { role: 'Assistant', email: 'assistant@pharmacy.com', password: 'Assistant@1234' },
               ].map(cred => (
                 <div
                   key={cred.role}

@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, useRef, useCallback } from 'react'
 import AppLayout from '../../components/AppLayout'
+import { validatePatientForm } from '@/lib/validations'
 
 interface Medicine { id: string; sku: string; name: string; genericName: string | null; category: string; unitPrice: number; totalStock: number; scheduleType: string | null; daysToExpiry: number | null }
 interface CartItem { medicineId: string; name: string; sku: string; unitPrice: number; quantity: number; totalStock: number; scheduleType: string | null }
@@ -100,8 +101,12 @@ export default function POSPage() {
   const totalAmount = cart.reduce((sum, i) => sum + i.quantity * i.unitPrice, 0)
   const hasScheduledDrug = cart.some(i => i.scheduleType && i.scheduleType !== 'OTC')
 
+  const [patientErrors, setPatientErrors] = useState<Record<string, string>>({})
+
   const addPatient = async () => {
-    if (!newPatient.name) return
+    const validation = validatePatientForm(newPatient)
+    if (!validation.valid) { setPatientErrors(validation.errors); return }
+    setPatientErrors({})
     setAddingPatient(true)
     try {
       const res = await fetch('/api/patients', {
@@ -110,10 +115,15 @@ export default function POSPage() {
         body: JSON.stringify({ ...newPatient, consentFlag: false }),
       })
       const data = await res.json()
-      if (data.error) throw new Error(data.error)
+      if (data.error) {
+        if (data.errors) setPatientErrors(data.errors)
+        else setError(data.error)
+        return
+      }
       setSelectedPatient(data.patient)
       setShowAddPatient(false)
       setNewPatient({ name: '', nic: '', phone: '', email: '', consentFlag: true })
+      setPatientErrors({})
     } catch (e: any) { setError(e.message) }
     finally { setAddingPatient(false) }
   }
@@ -226,19 +236,23 @@ export default function POSPage() {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '14px' }}>
                 <div style={{ gridColumn: '1 / -1' }}>
                   <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase' as const, letterSpacing: '0.5px' }}>Full Name *</label>
-                  <input value={newPatient.name} onChange={e => setNewPatient({...newPatient, name: e.target.value})} placeholder="Kumara Wijesekara" style={iStyle} />
+                  <input value={newPatient.name} onChange={e => { setNewPatient({...newPatient, name: e.target.value}); setPatientErrors(p => ({...p, name: ''})) }} placeholder="Kumara Wijesekara" style={{ ...iStyle, borderColor: patientErrors.name ? 'var(--danger)' : 'var(--border-default)' }} />
+                  {patientErrors.name && <p style={{ fontSize: '11px', color: 'var(--danger)', marginTop: '3px' }}>{patientErrors.name}</p>}
                 </div>
                 <div>
                   <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase' as const, letterSpacing: '0.5px' }}>NIC Number</label>
-                  <input value={newPatient.nic} onChange={e => setNewPatient({...newPatient, nic: e.target.value})} placeholder="700123456V" style={iStyle} />
+                  <input value={newPatient.nic} onChange={e => { setNewPatient({...newPatient, nic: e.target.value}); setPatientErrors(p => ({...p, nic: ''})) }} placeholder="700123456V" style={{ ...iStyle, borderColor: patientErrors.nic ? 'var(--danger)' : 'var(--border-default)' }} />
+                  {patientErrors.nic && <p style={{ fontSize: '11px', color: 'var(--danger)', marginTop: '3px' }}>{patientErrors.nic}</p>}
                 </div>
                 <div>
                   <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase' as const, letterSpacing: '0.5px' }}>Phone</label>
-                  <input value={newPatient.phone} onChange={e => setNewPatient({...newPatient, phone: e.target.value})} placeholder="077-1234567" style={iStyle} />
+                  <input value={newPatient.phone} onChange={e => { setNewPatient({...newPatient, phone: e.target.value}); setPatientErrors(p => ({...p, phone: ''})) }} placeholder="077-1234567" style={{ ...iStyle, borderColor: patientErrors.phone ? 'var(--danger)' : 'var(--border-default)' }} />
+                  {patientErrors.phone && <p style={{ fontSize: '11px', color: 'var(--danger)', marginTop: '3px' }}>{patientErrors.phone}</p>}
                 </div>
                 <div style={{ gridColumn: '1 / -1' }}>
                   <label style={{ display: 'block', fontSize: '11px', fontWeight: '700', color: 'var(--text-secondary)', marginBottom: '6px', textTransform: 'uppercase' as const, letterSpacing: '0.5px' }}>Email</label>
-                  <input value={newPatient.email} onChange={e => setNewPatient({...newPatient, email: e.target.value})} placeholder="patient@email.com" type="email" style={iStyle} />
+                  <input value={newPatient.email} onChange={e => { setNewPatient({...newPatient, email: e.target.value}); setPatientErrors(p => ({...p, email: ''})) }} placeholder="patient@email.com" type="email" style={{ ...iStyle, borderColor: patientErrors.email ? 'var(--danger)' : 'var(--border-default)' }} />
+                  {patientErrors.email && <p style={{ fontSize: '11px', color: 'var(--danger)', marginTop: '3px' }}>{patientErrors.email}</p>}
                 </div>
               </div>
               <div style={{ background: 'var(--info-bg)', border: '1px solid var(--info-border)', borderRadius: 'var(--radius-md)', padding: '12px 14px', marginBottom: '20px' }}>
