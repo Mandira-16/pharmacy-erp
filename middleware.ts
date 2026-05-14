@@ -1,5 +1,5 @@
-import { auth } from './auth'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { getToken } from 'next-auth/jwt'
 
 const ROLE_ROUTES: Record<string, string[]> = {
   '/forecasting': ['ADMIN', 'PHARMACIST', 'OWNER'],
@@ -12,14 +12,17 @@ const ROLE_ROUTES: Record<string, string[]> = {
   '/dashboard': ['ADMIN', 'PHARMACIST', 'OWNER', 'ASSISTANT'],
 }
 
-export default auth((req) => {
+export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
-  const role = (req.auth?.user as any)?.role
+
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
 
   // Not logged in — redirect to login
-  if (!req.auth) {
+  if (!token) {
     return NextResponse.redirect(new URL('/login', req.url))
   }
+
+  const role = token.role as string
 
   // Check role-based route access
   for (const [route, allowedRoles] of Object.entries(ROLE_ROUTES)) {
@@ -31,7 +34,7 @@ export default auth((req) => {
   }
 
   return NextResponse.next()
-})
+}
 
 export const config = {
   matcher: [
