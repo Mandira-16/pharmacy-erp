@@ -1,7 +1,7 @@
 'use client'
 
 import { useSession } from 'next-auth/react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import AppLayout from '../../components/AppLayout'
 
@@ -40,8 +40,6 @@ function KPICard({ label, value, sub, color, icon }: { label: string; value: str
 export default function DashboardPage() {
   const { status } = useSession()
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const denied = searchParams.get('denied')
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
