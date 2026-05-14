@@ -12,19 +12,17 @@ const ROLE_ROUTES: Record<string, string[]> = {
   '/dashboard': ['ADMIN', 'PHARMACIST', 'OWNER', 'ASSISTANT'],
 }
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl
 
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
 
-  // Not logged in — redirect to login
   if (!token) {
     return NextResponse.redirect(new URL('/login', req.url))
   }
 
   const role = token.role as string
 
-  // Check role-based route access
   for (const [route, allowedRoles] of Object.entries(ROLE_ROUTES)) {
     if (pathname.startsWith(route)) {
       if (!allowedRoles.includes(role)) {
