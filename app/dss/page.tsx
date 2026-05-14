@@ -58,6 +58,30 @@ export default function DSSPage() {
     setSummary(prev => ({ ...prev, total: prev.total - 1 }))
   }
 
+  const [applyingDiscount, setApplyingDiscount] = useState<string | null>(null)
+  const [discountSuccess, setDiscountSuccess] = useState<string | null>(null)
+
+  const applyDiscount = async (alert: Alert, meta: AlertMeta) => {
+    setApplyingDiscount(alert.id)
+    setDiscountSuccess(null)
+    try {
+      const res = await fetch('/api/dss/apply-discount', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          medicineId: (alert as any).medicineId || alert.medicine,
+          alertId: alert.id,
+          discountPercent: meta.suggestedDiscount ?? 10,
+        }),
+      })
+      const data = await res.json()
+      if (data.error) throw new Error(data.error)
+      setDiscountSuccess(`✓ ${data.message}`)
+      setAlerts(prev => prev.filter(a => a.id !== alert.id))
+      setSummary(prev => ({ ...prev, total: prev.total - 1, expiry: prev.expiry - 1 }))
+    } catch (e: any) { setError(e.message) }
+    finally { setApplyingDiscount(null) }
+  }
   const filtered = alerts.filter(a => activeTab === 'all' ? true : activeTab === 'expiry' ? a.alertType === 'EXPIRY_LIQUIDATION' : a.alertType === 'STOCKOUT_RISK')
   const total30 = results.reduce((s, r) => s + r.revenueProjection.day30, 0)
   const total90 = results.reduce((s, r) => s + r.revenueProjection.day90, 0)
@@ -96,6 +120,11 @@ export default function DSSPage() {
         )}
 
         {error && <div style={{ background: 'var(--danger-bg)', border: '1px solid var(--danger-border)', borderRadius: 'var(--radius-md)', padding: '12px 16px', marginBottom: '20px', color: 'var(--danger)', fontSize: '13px' }}>⚠ {error}</div>}
+        {discountSuccess && (
+          <div style={{ background: 'var(--success-bg)', border: '1px solid var(--success-border)', borderRadius: 'var(--radius-md)', padding: '12px 16px', marginBottom: '20px', color: 'var(--success)', fontSize: '13px', fontWeight: '500' }}>
+            {discountSuccess}
+          </div>
+        )}
 
         {/* KPIs */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '16px', marginBottom: '24px' }}>
@@ -165,6 +194,14 @@ export default function DSSPage() {
                           </>
                         )}
                       </div>
+                      {isExpiry && (
+                        <button
+                          onClick={() => applyDiscount(alert, meta)}
+                          disabled={applyingDiscount === alert.id}
+                          style={{ fontSize: '12px', color: 'white', background: 'var(--warning)', border: 'none', borderRadius: 'var(--radius-sm)', padding: '6px 14px', cursor: applyingDiscount === alert.id ? 'not-allowed' : 'pointer', fontFamily: 'inherit', fontWeight: '600', marginRight: '8px', opacity: applyingDiscount === alert.id ? 0.7 : 1 }}>
+                          {applyingDiscount === alert.id ? 'Applying...' : `🏷 Apply ${meta.suggestedDiscount ?? 10}% Discount`}
+                        </button>
+                      )}
                       <button onClick={() => resolveAlert(alert.id)} style={{ fontSize: '12px', color: 'var(--text-tertiary)', background: 'transparent', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-sm)', padding: '6px 14px', cursor: 'pointer', fontFamily: 'inherit', fontWeight: '500', transition: 'all 0.15s' }}
                         onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = 'var(--success)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--success-border)' }}
                         onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = 'var(--text-tertiary)'; (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border-default)' }}
@@ -198,7 +235,7 @@ export default function DSSPage() {
                     <div key={r.medicine} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <span style={{ fontSize: '11px', color: 'var(--text-secondary)', width: '80px', flexShrink: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.medicine}</span>
                       <div style={{ flex: 1, height: '5px', background: 'var(--bg-surface-2)', borderRadius: '3px', overflow: 'hidden' }}>
-                        <div style={{ height: '100%', width: `${(r.revenueProjection.day30/maxRev)*100}%`, background: '#10b981', borderRadius: '3px' }} />
+                        <div style={{ height: '100%', width: `${(r.revenueProjection.day30 / maxRev) * 100}%`, background: '#10b981', borderRadius: '3px' }} />
                       </div>
                       <span style={{ fontSize: '11px', color: 'var(--success)', fontWeight: '600', width: '70px', textAlign: 'right', flexShrink: 0 }}>{formatLKR(r.revenueProjection.day30)}</span>
                     </div>
