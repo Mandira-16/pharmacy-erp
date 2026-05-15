@@ -15,14 +15,28 @@ const ROLE_ROUTES: Record<string, string[]> = {
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl
 
+  // Skip auth routes, public pages and API auth
+  if (
+    pathname.startsWith('/api/auth') ||
+    pathname.startsWith('/login') ||
+    pathname.startsWith('/consent') ||
+    pathname.startsWith('/unauthorized') ||
+    pathname.startsWith('/_next') ||
+    pathname === '/'
+  ) {
+    return NextResponse.next()
+  }
+
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
 
+  // Not logged in — redirect to login
   if (!token) {
     return NextResponse.redirect(new URL('/login', req.url))
   }
 
   const role = token.role as string
 
+  // Check role-based route access
   for (const [route, allowedRoles] of Object.entries(ROLE_ROUTES)) {
     if (pathname.startsWith(route)) {
       if (!allowedRoles.includes(role)) {
@@ -36,13 +50,6 @@ export async function proxy(req: NextRequest) {
 
 export const config = {
   matcher: [
-    '/dashboard/:path*',
-    '/pos/:path*',
-    '/inventory/:path*',
-    '/patients/:path*',
-    '/suppliers/:path*',
-    '/forecasting/:path*',
-    '/dss/:path*',
-    '/reports/:path*',
+    '/((?!_next/static|_next/image|favicon.ico).*)',
   ],
 }
