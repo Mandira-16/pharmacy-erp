@@ -15,7 +15,7 @@ const ROLE_ROUTES: Record<string, string[]> = {
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl
 
-  // Skip auth routes, public pages and API auth
+  // Skip auth routes, public pages and static files
   if (
     pathname.startsWith('/api/auth') ||
     pathname.startsWith('/login') ||
@@ -27,16 +27,21 @@ export async function proxy(req: NextRequest) {
     return NextResponse.next()
   }
 
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
+  // Try both secure and non-secure cookie names
+  const token = await getToken({
+    req,
+    secret: process.env.NEXTAUTH_SECRET,
+    cookieName: process.env.NODE_ENV === 'production'
+      ? '__Secure-authjs.session-token'
+      : 'authjs.session-token',
+  })
 
-  // Not logged in — redirect to login
   if (!token) {
     return NextResponse.redirect(new URL('/login', req.url))
   }
 
   const role = token.role as string
 
-  // Check role-based route access
   for (const [route, allowedRoles] of Object.entries(ROLE_ROUTES)) {
     if (pathname.startsWith(route)) {
       if (!allowedRoles.includes(role)) {
