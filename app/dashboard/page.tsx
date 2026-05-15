@@ -116,7 +116,7 @@ export default function DashboardPage() {
               ))}
             </div>
             <div style={{ marginTop: '14px', padding: '10px 14px', background: 'var(--success-bg)', border: '1px solid var(--success-border)', borderRadius: 'var(--radius-md)', fontSize: '12px', color: 'var(--success)', fontWeight: '500' }}>
-              Model MAPE: 28.4% — vs industry baseline 141–191%
+              Model MAPE: 21.31% — vs industry baseline 141–191%
             </div>
           </div>
 
