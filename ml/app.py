@@ -16,7 +16,7 @@ with open(model_path, 'rb') as f:
 FEATURE_COLUMNS = [
     'lag_1', 'lag_2', 'lag_3', 'lag_7', 'lag_14', 'lag_30',
     'rolling_mean_7', 'rolling_mean_30',
-    'day_of_week', 'month', 'quarter', 'week_of_year', 'is_weekend',
+    'day_of_week', 'month_num', 'quarter', 'week_of_year', 'is_weekend',
     'stock_level', 'unit_price', 'expiry_days_remaining', 'covid_flag',
     'medicine_encoded', 'category_encoded', 'age_group_encoded',
 ]
@@ -48,7 +48,7 @@ def build_features(avg_daily_sales, category, horizon_days, stock_level=0, unit_
         rolling_mean_30 = np.mean(recent_sales[-30:])
 
         day_of_week  = future_date.weekday()
-        month        = future_date.month
+        month_num    = future_date.month
         quarter      = (future_date.month - 1) // 3 + 1
         week_of_year = future_date.isocalendar()[1]
         is_weekend   = 1 if day_of_week >= 5 else 0
@@ -60,7 +60,7 @@ def build_features(avg_daily_sales, category, horizon_days, stock_level=0, unit_
         features = pd.DataFrame([[
             lag_1, lag_2, lag_3, lag_7, lag_14, lag_30,
             rolling_mean_7, rolling_mean_30,
-            day_of_week, month, quarter, week_of_year, is_weekend,
+            day_of_week, month_num, quarter, week_of_year, is_weekend,
             stock_level, unit_price, expiry_days, 0,
             medicine_encoded, category_encoded, age_group_encoded,
         ]], columns=FEATURE_COLUMNS)

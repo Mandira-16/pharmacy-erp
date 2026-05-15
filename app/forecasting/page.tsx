@@ -46,7 +46,7 @@ export default function ForecastingPage() {
     finally { setLoading(false) }
   }
 
-  const features = health ? Object.entries(health.feature_importances).sort((a, b) => b[1] - a[1]).slice(0, 7) : []
+  const features = health?.feature_importances ? Object.entries(health.feature_importances).sort((a, b) => b[1] - a[1]).slice(0, 7) : []
   const maxFeature = features[0]?.[1] ?? 1
 
   const actionColors: Record<string, string> = { 'Critical Reorder': 'var(--danger)', 'Reorder Soon': 'var(--warning)', 'Monitor': 'var(--info)', 'Well Stocked': 'var(--success)' }
@@ -156,7 +156,7 @@ export default function ForecastingPage() {
                         <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--brand-primary)' }}>{(importance * 100).toFixed(0)}%</span>
                       </div>
                       <div style={{ height: '5px', background: 'var(--bg-surface-2)', borderRadius: '3px', overflow: 'hidden' }}>
-                        <div style={{ height: '100%', width: `${(importance/maxFeature)*100}%`, background: 'var(--brand-primary)', borderRadius: '3px' }} />
+                        <div style={{ height: '100%', width: `${(importance / maxFeature) * 100}%`, background: 'var(--brand-primary)', borderRadius: '3px' }} />
                       </div>
                     </div>
                   ))}
