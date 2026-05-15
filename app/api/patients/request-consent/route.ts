@@ -1,14 +1,9 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import nodemailer from 'nodemailer'
+import { Resend } from 'resend'
 import crypto from 'crypto'
 
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
-  auth: { user: process.env.GMAIL_USER, pass: process.env.GMAIL_APP_PASSWORD },
-})
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 function generateOTP() {
   return Math.floor(100000 + Math.random() * 900000).toString()
@@ -24,31 +19,23 @@ export async function POST(req: Request) {
     if (!patient.email) return NextResponse.json({ error: 'Patient has no email address registered' }, { status: 400 })
 
     const otp = generateOTP()
-    const otpExpiry = new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
+    const otpExpiry = new Date(Date.now() + 15 * 60 * 1000)
     const revokeToken = crypto.randomBytes(32).toString('hex')
     const baseUrl = process.env.NEXTAUTH_URL?.replace('http://', 'https://') ?? 'https://pharmacy-erp-production-9ff9.up.railway.app'
     const revokeUrl = `${baseUrl}/consent/revoke?token=${revokeToken}`
 
     await prisma.patient.update({
       where: { id: patientId },
-      data: {
-        consentOtp: otp,
-        consentOtpExpiry: otpExpiry,
-        consentRevokeToken: revokeToken,
-      },
+      data: { consentOtp: otp, consentOtpExpiry: otpExpiry, consentRevokeToken: revokeToken },
     })
 
-    const html = `
-<!DOCTYPE html>
+    const html = `<!DOCTYPE html>
 <html>
 <head><meta charset="utf-8"/></head>
 <body style="margin:0;padding:0;background:#f9fafb;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
   <div style="max-width:520px;margin:40px auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
     <div style="background:linear-gradient(135deg,#2563eb,#0ea5e9);padding:32px 36px;">
-      <div style="display:flex;align-items:center;gap:12px;">
-        <div style="width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:white;">+</div>
-        <span style="font-size:20px;font-weight:700;color:white;">Ceylon Pharmacy</span>
-      </div>
+      <div style="font-size:20px;font-weight:700;color:white;">+ Ceylon Pharmacy</div>
       <p style="color:rgba(255,255,255,0.75);font-size:13px;margin:8px 0 0;">Medical Records Access Request</p>
     </div>
     <div style="padding:32px 36px;">
@@ -61,7 +48,7 @@ export async function POST(req: Request) {
       </div>
       <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:14px 16px;margin:0 0 24px;">
         <p style="margin:0;font-size:13px;color:#dc2626;font-weight:600;">⚠ Important</p>
-        <p style="margin:6px 0 0;font-size:12px;color:#dc2626;line-height:1.6;">Only share this code with the pharmacist at Ceylon Pharmacy. Never share it with anyone else. If you did not request this, please ignore this email.</p>
+        <p style="margin:6px 0 0;font-size:12px;color:#dc2626;line-height:1.6;">Only share this code with the pharmacist at Ceylon Pharmacy. If you did not request this, please ignore this email.</p>
       </div>
       <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:14px 16px;">
         <p style="margin:0;font-size:13px;color:#15803d;font-weight:600;">🔒 Your Privacy Rights</p>
@@ -76,8 +63,8 @@ export async function POST(req: Request) {
 </body>
 </html>`
 
-    await transporter.sendMail({
-      from: `"Ceylon Pharmacy" <${process.env.GMAIL_USER}>`,
+    await resend.emails.send({
+      from: 'Ceylon Pharmacy <onboarding@resend.dev>',
       to: patient.email,
       subject: `Your Consent OTP — Ceylon Pharmacy (${otp})`,
       html,
