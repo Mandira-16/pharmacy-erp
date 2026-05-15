@@ -87,6 +87,7 @@ def health():
         'n_estimators': int(model.n_estimators),
         'n_features': int(model.n_features_in_),
         'feature_names': FEATURE_COLUMNS,
+        'feature_importances': dict(zip(FEATURE_COLUMNS, model.feature_importances_.tolist())),  # ← add this line
         'training_records': 7485,
     })
 
