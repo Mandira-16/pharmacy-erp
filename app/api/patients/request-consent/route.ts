@@ -21,7 +21,10 @@ export async function POST(req: Request) {
     const otp = generateOTP()
     const otpExpiry = new Date(Date.now() + 15 * 60 * 1000)
     const revokeToken = crypto.randomBytes(32).toString('hex')
-    const baseUrl = process.env.NEXTAUTH_URL ?? 'http://localhost:3000'
+    const baseUrl = process.env.NEXTAUTH_URL ||
+      (process.env.NODE_ENV === 'production'
+        ? 'https://pharmacy-erp-production-9ff9.up.railway.app'
+        : 'http://localhost:3000')
     console.log('[Consent] baseUrl:', baseUrl, 'NEXTAUTH_URL:', process.env.NEXTAUTH_URL)
     const revokeUrl = `${baseUrl}/consent/revoke?token=${revokeToken}`
 
