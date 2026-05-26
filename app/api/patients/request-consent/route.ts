@@ -21,7 +21,7 @@ export async function POST(req: Request) {
     const otp = generateOTP()
     const otpExpiry = new Date(Date.now() + 15 * 60 * 1000)
     const revokeToken = crypto.randomBytes(32).toString('hex')
-    const baseUrl = process.env.NEXTAUTH_URL?.replace('http://', 'https://') ?? 'https://pharmacy-erp-production-9ff9.up.railway.app'
+    const baseUrl = process.env.NEXTAUTH_URL ?? 'http://localhost:3000'
     const revokeUrl = `${baseUrl}/consent/revoke?token=${revokeToken}`
 
     await prisma.patient.update({
